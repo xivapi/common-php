@@ -1,0 +1,23 @@
+{
+    "name": "xivapi/common-php",
+    "description": "A library of shared common logic that both XIVAPI and MogBoard use.",
+    "homepage": "https://github.com/xivapi/common-php",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Josh Freeman",
+            "email": "josh@viion.co.uk",
+            "homepage": "http://xivapi.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^7.2"
+    },
+    "autoload": {
+        "psr-0": {
+            "XIV\\": "src/"
+        }
+    }
+}
