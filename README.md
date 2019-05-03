@@ -1,2 +1,3 @@
 # common-php
-Common libraries I use throughout XIVAPI/Mogboard projects.
+
+Common code I use between Mogboard AND XIVAPI.

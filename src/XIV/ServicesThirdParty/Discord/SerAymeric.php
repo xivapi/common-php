@@ -1,15 +1,15 @@
 <?php
 
-namespace XIV\Discord;
+namespace XIV\ServicesThirdParty\Discord;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 
-class Mog
+class SerAymeric
 {
-    const ENDPOINT = 'https://mog.xivapi.com/mog/notify';
-
-    private function send(array $json = null)
+    const ENDPOINT = 'https://mog.xivapi.com/aymeric/notify';
+    
+    private function send(array $json)
     {
         (new Client())->post(self::ENDPOINT, [
             RequestOptions::JSON => $json,
@@ -18,16 +18,16 @@ class Mog
             ],
         ]);
     }
-
+    
     /**
-     * Post a message via mog
+     * Send a message to a user
      */
-    public function sendMessage(int $channel = null, string $content = null, array $embed = null)
+    public function sendMessage(string $userId, string $content = null, array $embed = null)
     {
         $this->send([
-            'channel' => $channel,
+            'user_id' => $userId,
             'content' => $content,
-            'embed' => $embed
+            'embed'   => $embed,
         ]);
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace XIV\Discord;
+namespace XIV\ServicesThirdParty\Discord;
 
 class Discord
 {
@@ -21,7 +21,7 @@ class Discord
      */
     private static function getClass($namespace, $className)
     {
-        if (self::$classes[$namespace]) {
+        if (isset(self::$classes[$namespace])) {
             return self::$classes[$namespace];
         }
 
