@@ -4,7 +4,6 @@ namespace XIV\User;
 
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Uuid;
-use XIV\Constants\RateLimitConstants;
 use XIV\Constants\UserConstants;
 use XIV\Utils\Random;
 

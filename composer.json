@@ -14,7 +14,8 @@
     ],
     "require": {
         "php": "^7.2",
-        "ramsey/uuid": "^3.8"
+        "ramsey/uuid": "^3.8",
+        "doctrine/orm": "^2.6"
     },
     "autoload": {
         "psr-0": {
