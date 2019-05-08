@@ -17,10 +17,9 @@ class DigitalOcean
     {
         $adapter = new GuzzleHttpAdapter(getenv('DIGITALOCEAN_TOKEN_ID'));
         $do      = new DigitalOceanV2($adapter);
-
         $servers = [];
         $volumes = [];
-        $total = 0.00;
+        $total   = 0.00;
 
         /** @var Droplet $droplet */
         foreach($do->droplet()->getAll() as $droplet) {
@@ -37,7 +36,7 @@ class DigitalOcean
             $total += (float)$volume->sizeGigabytes * 0.10;
 
             $volumes[] = [
-                'name' => 'Vol0'. ($i+1) .' '. $volume->sizeGigabytes .' GB',
+                'name' => 'Vol 0'. ($i+1) .' '. $volume->sizeGigabytes .' GB',
                 'cost' => (float)$volume->sizeGigabytes * 0.10,
             ];
         }

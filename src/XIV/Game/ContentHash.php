@@ -2,6 +2,11 @@
 
 namespace XIV\Game;
 
+/**
+ * provides a way to hash content "names" into something
+ * that can be easily matched, this makes it easier to
+ * identify stuff that is parsed from Lodestone.
+ */
 class ContentHash
 {
     // max length of hash, not much game content so it can be small

@@ -22,7 +22,7 @@ class GitHub
             ];
 
             // cache for an hour, I don't commit that often!
-            Redis::Cache()->set('github_commits', $commits, 60*60);
+            Redis::Cache()->set('github_commits', $commits, 60 * 60);
         }
 
         return $commits;

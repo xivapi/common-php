@@ -2,14 +2,12 @@
 
 namespace XIV\User;
 
-use App\Entity\User;
-use App\Exception\ApiUnknownPrivateKeyException;
-use App\Repository\UserRepository;
-use App\Service\ThirdParty\Discord\Discord;
 use Delight\Cookie\Cookie;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use XIV\Exception\ApiUnknownPrivateKeyException;
+use XIV\ServicesThirdParty\Discord\Discord;
 
 class Users
 {

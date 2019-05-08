@@ -2,12 +2,13 @@
 
 namespace XIV\Twig;
 
-use App\Service\Redis\Redis;
 use Carbon\Carbon;
 use Carbon\CarbonTimeZone;
 use Delight\Cookie\Cookie;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
+use Twig\TwigFunction;
+use XIV\Service\Redis\Redis;
 use XIV\Utils\Language;
 use XIV\Utils\SiteVersion;
 use XIV\Utils\Time;
@@ -28,12 +29,12 @@ class AppExtension extends AbstractExtension
     public function getFunctions()
     {
         return [
-            new \Twig_SimpleFunction('siteVersion', [$this, 'getApiVersion']),
-            new \Twig_SimpleFunction('favIcon', [$this, 'getFavIcon']),
-            new \Twig_SimpleFunction('cache', [$this, 'getCached']),
-            new \Twig_SimpleFunction('timezone', [$this, 'getTimezone']),
-            new \Twig_SimpleFunction('timezones', [$this, 'getTimezones']),
-            new \Twig_SimpleFunction('cookie', [$this, 'getCookie']),
+            new TwigFunction('siteVersion', [$this, 'getApiVersion']),
+            new TwigFunction('favIcon', [$this, 'getFavIcon']),
+            new TwigFunction('cache', [$this, 'getCached']),
+            new TwigFunction('timezone', [$this, 'getTimezone']),
+            new TwigFunction('timezones', [$this, 'getTimezones']),
+            new TwigFunction('cookie', [$this, 'getCookie']),
         ];
     }
 

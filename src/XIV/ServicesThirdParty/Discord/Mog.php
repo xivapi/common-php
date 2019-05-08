@@ -10,7 +10,6 @@ class Mog
     const ENDPOINT           = 'https://mog.xivapi.com';
     const ENDPOINT_NOTIFY    = '/mog/notify';
     const ENDPOINT_IS_PATRON = '/users/patreon-tier';
-
     const METHOD_POST        = 'POST';
     const METHOD_GET         = 'GET';
 

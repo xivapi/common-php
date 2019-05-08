@@ -2,7 +2,6 @@
 
 namespace XIV\Game;
 
-use App\Service\Data\CsvReader;
 use PhpParser\Error;
 use PhpParser\ParserFactory;
 
@@ -19,9 +18,11 @@ class DescriptionFormatter
     
     public function format(string $description)
     {
-        foreach (CsvReader::Get(__DIR__ . '/../DataCustom/Csv/UIColor.csv') as $row) {
-            $id = $row['key'];
-            [$colourA, $colourB] = $row;
+        $descriptionUiColors = file_get_contents(__DIR__.'/DescriptionUIColor.csv');
+        $descriptionUiColors = explode(PHP_EOL, $descriptionUiColors);
+
+        foreach ($descriptionUiColors as $row) {
+            [$id, $colourA, $colourB] = str_getcsv($row);
             $this->colours[$id] = $colourA;
         }
         

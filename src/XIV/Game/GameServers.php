@@ -2,7 +2,7 @@
 
 namespace XIV\Game;
 
-use App\Exception\CompanionMarketServerException;
+use XIV\Exceptions\CompanionMarketServerException;
 
 class GameServers
 {

@@ -7,9 +7,6 @@ namespace XIV\Service\Redis;
  */
 class RedisCache
 {
-    const LOCAL = 'REDIS_SERVER_LOCAL';
-    const PROD  = 'REDIS_SERVER_PROD';
-    
     /** @var \Redis */
     private $instance;
     /** @var \Redis */
@@ -25,9 +22,9 @@ class RedisCache
         'read_timeout'  => -1,
     ];
     
-    public function connect(string $env = self::LOCAL): RedisCache
+    public function connect(string $environment): RedisCache
     {
-        $config = explode(',', getenv($env));
+        $config = explode(',', getenv($environment));
         $ip     = $config[0];
         $port   = $config[1];
         $auth   = $config[2];
