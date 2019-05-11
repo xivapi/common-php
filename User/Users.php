@@ -1,6 +1,6 @@
 <?php
 
-namespace XIV\User;
+namespace App\Common\User;
 
 use Delight\Cookie\Cookie;
 use Doctrine\ORM\EntityManagerInterface;

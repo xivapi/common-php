@@ -1,6 +1,6 @@
 <?php
 
-namespace XIV\Exceptions;
+namespace App\Common\Exceptions;
 
 class CompanionMarketServerException extends \Exception
 {
