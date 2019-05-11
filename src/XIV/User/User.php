@@ -2,10 +2,10 @@
 
 namespace XIV\User;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Uuid;
 use XIV\Constants\UserConstants;
-use XIV\Utils\Random;
 
 /**
  * @ORM\Table(
@@ -59,12 +59,6 @@ class User
      */
     protected $sso;
     /**
-     * A random hash saved to cookie to retrieve the token
-     * @var string
-     * @ORM\Column(type="string", length=255, unique=true, nullable=true)
-     */
-    protected $session;
-    /**
      * Username provided by the SSO provider (updates on token refresh)
      * @var string
      * @ORM\Column(type="string", length=64)
@@ -91,6 +85,10 @@ class User
      * @ORM\Column(type="integer")
      */
     protected $patron = UserConstants::DEFAULT_PATRON;
+    /**
+     * @ORM\OneToMany(targetEntity="User", mappedBy="user")
+     */
+    protected $sessions;
     
     // -- discord sso
 
@@ -124,16 +122,9 @@ class User
 
     public function __construct()
     {
-        $this->id           = Uuid::uuid4();
-        $this->added        = time();
-        
-        $this->generateSession();
-    }
-
-    public function generateSession()
-    {
-        $this->session = Random::randomSecureString(UserConstants::SESSION_LENGTH);
-        return;
+        $this->id       = Uuid::uuid4();
+        $this->added    = time();
+        $this->sessions = new ArrayCollection();
     }
 
     public function getAvatar(): string
