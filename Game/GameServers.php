@@ -2,7 +2,7 @@
 
 namespace App\Common\Game;
 
-use XIV\Exceptions\CompanionMarketServerException;
+use App\Common\Exceptions\CompanionMarketServerException;
 
 class GameServers
 {
@@ -212,7 +212,7 @@ class GameServers
             }
         }
 
-        return 'Chaos';
+        return 'Light';
     }
 
     /**

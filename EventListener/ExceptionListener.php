@@ -7,11 +7,11 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
-use XIV\Constants\DiscordConstants;
-use XIV\Service\Redis\Redis;
-use XIV\ServicesThirdParty\Discord\Discord;
-use XIV\Utils\Environment;
-use XIV\Utils\Random;
+use App\Common\Constants\DiscordConstants;
+use App\Common\Service\Redis\Redis;
+use App\Common\ServicesThirdParty\Discord\Discord;
+use App\Common\Utils\Environment;
+use App\Common\Utils\Random;
 
 class ExceptionListener implements EventSubscriberInterface
 {
@@ -55,9 +55,7 @@ class ExceptionListener implements EventSubscriberInterface
         }
 
         // remove root directories
-        $file = str_ireplace('/home/dalamud/dalamud', '', $ex->getFile());
-        $file = str_ireplace('/home/dalamud/dalamud_staging', '', $file);
-        $file = str_ireplace('/home/dalamud/xivapi.com', '', $file);
+        $file = str_ireplace('/home/dalamud/', '', $ex->getFile());
         $message = $ex->getMessage() ?: '(no-exception-message)';
 
         $json = (Object)[
@@ -100,7 +98,8 @@ class ExceptionListener implements EventSubscriberInterface
 
         $response = new JsonResponse($json, $json->Debug->Code);
         $response->headers->set('Content-Type','application/json');
-        $response->headers->set('Access-Control-Allow-Origin','*');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->headers->set('Access-Control-Allow-Headers', '*');
         $event->setResponse($response);
     }
 }

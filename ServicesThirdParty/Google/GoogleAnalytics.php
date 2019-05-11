@@ -3,7 +3,7 @@
 namespace App\Common\ServicesThirdParty\Google;
 
 use App\Service\API\ApiRequest;
-use App\Service\Common\Language;
+use App\Common\Utils\Language;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use Ramsey\Uuid\Uuid;

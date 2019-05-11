@@ -2,31 +2,36 @@
 
 namespace App\Common\User;
 
+use App\Common\Constants\PatreonConstants;
+use App\Common\Entity\User;
+use App\Common\Entity\UserAlert;
+use App\Common\Entity\UserSession;
+use App\Exception\ApiUnknownPrivateKeyException;
+use App\Repository\UserRepository;
+use App\Service\ThirdParty\Discord\Discord;
 use Delight\Cookie\Cookie;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use XIV\Exception\ApiUnknownPrivateKeyException;
-use XIV\ServicesThirdParty\Discord\Discord;
 
 class Users
 {
     const COOKIE_SESSION_NAME = 'session';
     const COOKIE_SESSION_DURATION = (60 * 60 * 24 * 30);
-
+    
     /** @var EntityManagerInterface */
     private $em;
     /** @var UserRepository */
     private $repository;
     /** @var SignInInterface */
     private $sso;
-
+    
     public function __construct(EntityManagerInterface $em)
     {
         $this->em         = $em;
         $this->repository = $em->getRepository(User::class);
     }
-
+    
     /**
      * Set the single sign in provider
      */
@@ -35,7 +40,7 @@ class Users
         $this->sso = $sso;
         return $this;
     }
-
+    
     /**
      * Get user repository
      */
@@ -43,7 +48,7 @@ class Users
     {
         return $this->repository;
     }
-
+    
     /**
      * Get the current logged in user
      */
@@ -54,22 +59,33 @@ class Users
             if ($mustBeOnline) {
                 throw new NotFoundHttpException();
             }
-
+            
             return null;
         }
-
-        /** @var User $user */
-        $user = $this->repository->findOneBy([
-            'session' => $session,
+    
+        /** @var UserSession $session */
+        $session = $this->em->getRepository(UserSession::class)->findOneBy([
+            'session' => $session
         ]);
-
+        
+        $user = $session ? $session->getUser() : null;
+        
         if ($mustBeOnline && !$user) {
             throw new NotFoundHttpException();
         }
-
+        
+        // test
+        
+        // update the "last active" time if it's been an hour.
+        $timeout = time() - (60 * 60);
+        if ($session->getLastActive() < $timeout) {
+            $session->setLastActive(time());
+            $this->save($user, $session);
+        }
+        
         return $user;
     }
-
+    
     /**
      * Get a user via their API Key
      */
@@ -78,14 +94,14 @@ class Users
         $user = $this->repository->findOneBy([
             'apiPublicKey' => $key,
         ]);
-
+        
         if (empty($user)) {
             throw new ApiUnknownPrivateKeyException();
         }
-
+        
         return $user;
     }
-
+    
     /**
      * Is the current user online?
      */
@@ -93,7 +109,7 @@ class Users
     {
         return !empty($this->getUser());
     }
-
+    
     /**
      * Sign in
      */
@@ -101,7 +117,7 @@ class Users
     {
         return $this->sso->getLoginAuthorizationUrl();
     }
-
+    
     /**
      * Logout a user
      */
@@ -111,7 +127,7 @@ class Users
         $cookie->setValue('x')->setMaxAge(-1)->setPath('/')->save();
         $cookie->delete();
     }
-
+    
     /**
      * Authenticate
      */
@@ -122,29 +138,30 @@ class Users
         $user = $this->repository->findOneBy([
             'ssoDiscordId' => $sso->id,
         ]);
-
+        
         // handle user info during login process
-        $user = $this->handleUser($sso, $user);
-
+        [$user, $session] = $this->handleUser($sso, $user);
+        
         // set cookie
         $cookie = new Cookie(self::COOKIE_SESSION_NAME);
-        $cookie->setValue($user->getSession())->setMaxAge(self::COOKIE_SESSION_DURATION)->setPath('/')->save();
-
+        $cookie->setValue($session->getSession())->setMaxAge(self::COOKIE_SESSION_DURATION)->setPath('/')->save();
+        
         return $user;
     }
-
+    
     /**
      * Set user information
      */
-    public function handleUser(\stdClass $sso, User $user = null): User
+    public function handleUser(\stdClass $sso, User $user = null): array
     {
         $user = $user ?: new User();
         $user
             ->setSso($sso->name)
             ->setUsername($sso->username)
-            ->setEmail($sso->email)
-            ->generateSession();
-
+            ->setEmail($sso->email);
+    
+        $session = new UserSession($user);
+    
         // set discord info
         if ($sso->name === SignInDiscord::NAME) {
             $user
@@ -154,46 +171,25 @@ class Users
                 ->setSsoDiscordTokenExpires($sso->tokenExpires)
                 ->setSsoDiscordTokenRefresh($sso->tokenRefresh);
         }
-
-        $this->save($user);
-        return $user;
+        
+        $this->save($user, $session);
+        return [
+            $user,
+            $session
+        ];
     }
-
+    
     /**
      * Update a user
      */
-    public function save(User $user): void
+    public function save(User $user, UserSession $userSession = null): void
     {
+        if ($userSession) {
+            $this->em->persist($userSession);
+        }
+        
         $this->em->persist($user);
         $this->em->flush();
-    }
-    
-    /**
-     * Checks the patreon status of all users against the discord channel.
-     */
-    public function checkPatreonTiers()
-    {
-        $users   = $this->repository->findAll();
-        $total   = count($users);
-        $console = new ConsoleOutput();
-        $start   = microtime(true);
-        
-        /** @var User $user */
-        foreach ($users as $i => $user) {
-            $i = ($i + 1);
-            $console->writeln("({$i}/{$total}) Checking: {$user->getSsoDiscordId()} {$user->getUsername()}");
-            $this->checkPatreonTierForUser($user);
-            usleep(100000);
-            
-            if ($i % 50 == 0) {
-                $this->em->flush();
-            }
-        }
-    
-        $this->em->flush();
-        $this->em->clear();
-        $duration = round(microtime(true) - $start, 2);
-        $console->writeln("Finished, duration: {$duration}");
     }
     
     /**
@@ -203,17 +199,72 @@ class Users
     {
         try {
             $response = Discord::mog()->getUserRole($user->getSsoDiscordId());
-            $tier = $response->data;
         } catch (\Exception $ex) {
             return;
         }
-    
+        
         // don't do anything if the response was not a 200
         if ($response->code != 200) {
             return;
         }
-    
-        $user->setPatron($tier ?: 0);
+        
+        $tier = $response->data;
+        $tier = $tier ?: 0;
+        
+        // set patreon tier
+        $user->setPatron($tier);
+        
+        /**
+         * Alerts!
+         */
+        
+        // Get Alert Limits
+        $benefits = PatreonConstants::ALERT_LIMITS[$tier];
+        
+        // update user
+        $user
+            ->setAlertsMax($benefits['MAX'])
+            ->setAlertsExpiry($benefits['EXPIRY_TIMEOUT'])
+            ->setAlertsUpdate($benefits['UPDATE_TIMEOUT']);
+        
         $this->em->persist($user);
+            $this->em->flush();
+        }
+
+    /**
+     * Extends the expiry time of the users alerts.
+     */
+    public function refreshUsersAlerts()
+    {
+        $user = $this->getUser(false);
+        
+        if ($user === null) {
+            return;
+        }
+        
+        /** @var UserAlert $alert */
+        foreach ($user->getAlerts() as $alert) {
+            $alert->setExpiry(
+                time() + $user->getAlertsExpiry()
+            );
+            
+            $this->em->persist($alert);
+        }
+        
+        $this->em->flush();
+    }
+    
+    /**
+     * Get all patreons
+     */
+    public function getPatrons()
+    {
+        return [
+            4 => $this->repository->findBy([ 'patron' => 4 ]),
+            3 => $this->repository->findBy([ 'patron' => 3 ]),
+            2 => $this->repository->findBy([ 'patron' => 2 ]),
+            1 => $this->repository->findBy([ 'patron' => 1 ]),
+            9 => $this->repository->findBy([ 'patron' => 9 ]),
+        ];
     }
 }

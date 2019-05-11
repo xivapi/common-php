@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Common\Service\Redis;
+namespace App\Common\Constants;
 
 class RedisConstants
 {

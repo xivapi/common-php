@@ -2,7 +2,7 @@
 
 namespace App\Common\ServicesThirdParty\Github;
 
-use App\Service\Redis\Redis;
+use App\Common\Service\Redis\Redis;
 
 class GitHub
 {

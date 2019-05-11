@@ -2,39 +2,41 @@
 
 namespace App\Common\Twig;
 
+use App\Common\Service\Redis\Redis;
+use App\Common\Utils\Language;
+use App\Common\Utils\SiteVersion;
+use App\Common\Utils\Time;
 use Carbon\Carbon;
 use Carbon\CarbonTimeZone;
 use Delight\Cookie\Cookie;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
-use XIV\Service\Redis\Redis;
-use XIV\Utils\Language;
-use XIV\Utils\SiteVersion;
-use XIV\Utils\Time;
 
 class AppExtension extends AbstractExtension
 {
     public function getFilters()
     {
         return [
-            new TwigFilter('date', [$this, 'getDate']),
-            new TwigFilter('dateSimple', [$this, 'getDateSimple']),
-            new TwigFilter('bool', [$this, 'getBoolVisual']),
-            new TwigFilter('max', [$this, 'getMaxValue']),
-            new TwigFilter('min', [$this, 'getMinValue']),
+            new TwigFilter('date',          [$this, 'getDate']),
+            new TwigFilter('dateSimple',    [$this, 'getDateSimple']),
+            new TwigFilter('dateRelative',  [$this, 'getDateRelative']),
+            new TwigFilter('bool',          [$this, 'getBoolVisual']),
+            new TwigFilter('max',           [$this, 'getMaxValue']),
+            new TwigFilter('min',           [$this, 'getMinValue']),
         ];
     }
 
     public function getFunctions()
     {
         return [
-            new TwigFunction('siteVersion', [$this, 'getApiVersion']),
-            new TwigFunction('favIcon', [$this, 'getFavIcon']),
-            new TwigFunction('cache', [$this, 'getCached']),
-            new TwigFunction('timezone', [$this, 'getTimezone']),
-            new TwigFunction('timezones', [$this, 'getTimezones']),
-            new TwigFunction('cookie', [$this, 'getCookie']),
+            new TwigFunction('siteVersion', [$this, 'getVersion']),
+            new TwigFunction('favIcon',     [$this, 'getFavIcon']),
+            new TwigFunction('env',         [$this, 'getEnvVariable']),
+            new TwigFunction('cache',       [$this, 'getCached']),
+            new TwigFunction('timezone',    [$this, 'getTimezone']),
+            new TwigFunction('timezones',   [$this, 'getTimezones']),
+            new TwigFunction('cookie',      [$this, 'getCookie']),
         ];
     }
 
@@ -71,6 +73,30 @@ class AppExtension extends AbstractExtension
 
         return $carbon->diffForHumans();
     }
+    
+    /**
+     * Show a date in relative terms
+     */
+    public function getDateRelative($unix)
+    {
+        $unix = is_numeric($unix) ? $unix : strtotime($unix);
+        $difference = time() - $unix;
+        
+        // if over 72hrs, show date
+        if ($difference > (60 * 60 * 72)) {
+            return date('M jS', $unix);
+        }
+        
+        return Carbon::now()->subSeconds($difference)->diffForHumans();
+    }
+    
+    /**
+     * Get an environment variable
+     */
+    public function getEnvVariable($string)
+    {
+        return getenv($string);
+    }
 
     /**
      * Get Users Timezone
@@ -80,13 +106,6 @@ class AppExtension extends AbstractExtension
         return Time::timezone();
     }
 
-    /**
-     * Get supported timezones
-     */
-    public function getTimezones()
-    {
-        return Time::timezones();
-    }
 
     public function getCookie($value, $defaultValue = null)
     {
@@ -120,7 +139,7 @@ class AppExtension extends AbstractExtension
     /**
      * Get API version information
      */
-    public function getApiVersion()
+    public function getVersion()
     {
         return SiteVersion::get();
     }
