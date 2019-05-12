@@ -77,16 +77,12 @@ class ExceptionListener implements EventSubscriberInterface
                 'Env'     => constant(Environment::CONSTANT),
             ]
         ];
-        
+    
+        // some errors should not submit to Discord
         $ignore = false;
+        $ignoreCodes = [404, 406];
         
-        // ignore 404 errors
-        if ($json->Debug->Code == '404') {
-            $ignore = true;
-        }
-        
-        // ignore local
-        if (stripos($json->Debug->File, 'vagrant') !== false) {
+        if (in_array($json->Debug->Code, $ignoreCodes) || stripos($json->Debug->File, 'vagrant') !== false) {
             $ignore = true;
         }
 
