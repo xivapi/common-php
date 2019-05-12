@@ -75,7 +75,8 @@ class ExceptionListener implements EventSubscriberInterface
                 'Code'    => method_exists($ex, 'getStatusCode') ? $ex->getStatusCode() : 500,
                 'Date'    => date('Y-m-d H:i:s'),
                 'Env'     => constant(Environment::CONSTANT),
-            ]
+            ],
+            'Trace' => $ex->getTraceAsString(),
         ];
         
         $ignore = false;
@@ -91,8 +92,8 @@ class ExceptionListener implements EventSubscriberInterface
         }
 
         // decide if to send a message to discord
-        if ($ignore === false && Redis::Cache()->get("mb_error_{$json->Hash}") == null) {
-            Redis::Cache()->set("mb_error_{$json->Hash}", true);
+        if ($ignore === false && Redis::Cache()->get("error_{$json->Hash}") == null) {
+            Redis::Cache()->set("error_{$json->Hash}", true);
             Discord::mog()->sendMessage(DiscordConstants::ROOM_ERRORS, "```". json_encode($json, JSON_PRETTY_PRINT) ."```");
         }
 
