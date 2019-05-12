@@ -2,7 +2,7 @@
 
 namespace App\Common\ServicesThirdParty\Vultr;
 
-use App\Service\Common\Arrays;
+use App\Common\Utils\Arrays;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\RequestOptions;

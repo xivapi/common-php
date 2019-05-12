@@ -2,7 +2,7 @@
 
 namespace App\Common\ServicesThirdParty\DigitalOcean;
 
-use App\Service\Common\Arrays;
+use App\Common\Utils\Arrays;
 use DigitalOceanV2\Adapter\GuzzleHttpAdapter;
 use DigitalOceanV2\DigitalOceanV2;
 use DigitalOceanV2\Entity\Droplet;
