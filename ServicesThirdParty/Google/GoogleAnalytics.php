@@ -102,9 +102,10 @@ class GoogleAnalytics
         self::event('xivapi', 'Requests', 'Language', Language::current());
     }
     
-    public static function trackApiKey(string $apiKey)
+    public static function trackApiKey(string $apiKey, string $endpoint = null)
     {
         self::event('xivapi', 'Users', 'API Key', $apiKey);
+        self::event('xivapi', 'Key Endpoints', $apiKey, $endpoint);
     }
 
     public static function trackApiKeyHardCapped(string $apiKey)
