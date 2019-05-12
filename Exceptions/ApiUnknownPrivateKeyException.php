@@ -2,7 +2,9 @@
 
 namespace App\Common\Exceptions;
 
-class ApiUnknownPrivateKeyException extends \Exception
+use Symfony\Component\HttpKernel\Exception\HttpException;
+
+class ApiUnknownPrivateKeyException extends HttpException
 {
     use ExceptionTrait;
 
