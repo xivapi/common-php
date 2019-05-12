@@ -8,7 +8,7 @@ use App\Common\Entity\UserAlert;
 use App\Common\Entity\UserSession;
 use App\Common\Repository\UserRepository;
 use App\Common\ServicesThirdParty\Discord\Discord;
-use App\Exceptions\ApiUnknownPrivateKeyException;
+use App\Common\Exceptions\ApiUnknownPrivateKeyException;
 use Delight\Cookie\Cookie;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
