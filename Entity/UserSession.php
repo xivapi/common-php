@@ -39,12 +39,20 @@ class UserSession
      * @var int
      * @ORM\Column(type="integer")
      */
-    private $lastActive;
+    protected $lastActive;
+    /**
+     * @var string
+     * @ORM\Column(type="string", length=64)
+     */
+    protected $site;
 
     public function __construct(User $user)
     {
-        $this->id    = Uuid::uuid4();
-        $this->user  = $user;
+        $this->id         = Uuid::uuid4();
+        $this->user       = $user;
+        $this->lastActive = time();
+        $this->site       = getenv('SITE_CONFIG_NAME');
+        
         $this->generateSession();
     }
     

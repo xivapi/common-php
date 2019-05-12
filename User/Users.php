@@ -75,13 +75,13 @@ class Users
             throw new NotFoundHttpException();
         }
         
-        // test
-        
-        // update the "last active" time if it's been an hour.
-        $timeout = time() - (60 * 60);
-        if ($session->getLastActive() < $timeout) {
-            $session->setLastActive(time());
-            $this->save($user, $session);
+        if ($session) {
+            // update the "last active" time if it's been an hour.
+            $timeout = time() - (60 * 60);
+            if ($session->getLastActive() < $timeout) {
+                $session->setLastActive(time());
+                $this->save($user, $session);
+            }
         }
         
         return $user;

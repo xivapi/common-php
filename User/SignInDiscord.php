@@ -2,11 +2,11 @@
 
 namespace App\Common\User;
 
+use App\Common\Exceptions\CSRFInvalidationException;
 use League\OAuth2\Client\Token\AccessToken;
 use League\OAuth2\Client\Token\AccessTokenInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Wohali\OAuth2\Client\Provider\Discord;
-use XIV\Exceptions\CSRFInvalidationException;
 
 class SignInDiscord implements SignInInterface
 {

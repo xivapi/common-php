@@ -117,7 +117,18 @@ class AppExtension extends AbstractExtension
     {
         return Time::timezone();
     }
-
+    
+    /**
+     * Get supported timezones
+     */
+    public function getTimezones()
+    {
+        return Time::timezones();
+    }
+    
+    /**
+     * Get a cookie value
+     */
     public function getCookie($value, $defaultValue = null)
     {
         return Cookie::get($value) ?: $defaultValue;
