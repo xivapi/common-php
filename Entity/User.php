@@ -336,7 +336,7 @@ class User
         return $this;
     }
     
-    public function getNotes(): string
+    public function getNotes(): ?string
     {
         return $this->notes;
     }
@@ -380,7 +380,7 @@ class User
         return $this;
     }
     
-    public function getPatron(): int
+    public function getPatron(): ?int
     {
         return $this->patron;
     }
@@ -503,7 +503,7 @@ class User
         return $this->alerts ? count($this->alerts) : 0;
     }
     
-    public function getAlertsMax(): int
+    public function getAlertsMax(): ?int
     {
         return $this->alertsMax;
     }
@@ -514,9 +514,9 @@ class User
         return $this;
     }
     
-    public function getAlertsExpiry(): int
+    public function getAlertsExpiry(): ?int
     {
-        return $this->alertsExpiry;
+        return $this->alertsExpiry ?: 0;
     }
     
     public function setAlertsExpiry(int $alertsExpiry)
@@ -536,7 +536,7 @@ class User
         return $this;
     }
     
-    public function getSsoDiscordId(): string
+    public function getSsoDiscordId(): ?string
     {
         return $this->ssoDiscordId;
     }
@@ -558,7 +558,7 @@ class User
         return $this;
     }
     
-    public function getSsoDiscordTokenExpires(): int
+    public function getSsoDiscordTokenExpires(): ?int
     {
         return $this->ssoDiscordTokenExpires;
     }
@@ -569,7 +569,7 @@ class User
         return $this;
     }
     
-    public function getSsoDiscordTokenAccess(): string
+    public function getSsoDiscordTokenAccess(): ?string
     {
         return $this->ssoDiscordTokenAccess;
     }
@@ -580,7 +580,7 @@ class User
         return $this;
     }
     
-    public function getSsoDiscordTokenRefresh(): string
+    public function getSsoDiscordTokenRefresh(): ?string
     {
         return $this->ssoDiscordTokenRefresh;
     }
@@ -602,7 +602,7 @@ class User
         return $this;
     }
     
-    public function getApiAnalyticsKey(): string
+    public function getApiAnalyticsKey(): ?string
     {
         return $this->apiAnalyticsKey;
     }
