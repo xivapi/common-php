@@ -195,8 +195,8 @@ class User
     {
         $this->id           = Uuid::uuid4();
         $this->added        = time();
-        $this->sessions     = new ArrayCollection();
         $this->apiPublicKey = Random::randomAccessKey();
+        $this->sessions     = new ArrayCollection();
         
         $this->alertsMax    = PatreonConstants::ALERT_DEFAULTS['MAX'];
         $this->alertsExpiry = PatreonConstants::ALERT_DEFAULTS['EXPIRY_TIMEOUT'];
@@ -547,12 +547,12 @@ class User
         return $this;
     }
     
-    public function getSsoDiscordAvatar(): string
+    public function getSsoDiscordAvatar(): ?string
     {
         return $this->ssoDiscordAvatar;
     }
     
-    public function setSsoDiscordAvatar(string $ssoDiscordAvatar)
+    public function setSsoDiscordAvatar(?string $ssoDiscordAvatar = null)
     {
         $this->ssoDiscordAvatar = $ssoDiscordAvatar;
         return $this;
