@@ -76,7 +76,6 @@ class ExceptionListener implements EventSubscriberInterface
                 'Date'    => date('Y-m-d H:i:s'),
                 'Env'     => constant(Environment::CONSTANT),
             ],
-            'Trace' => $ex->getTraceAsString(),
         ];
         
         $ignore = false;
