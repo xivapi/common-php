@@ -4,7 +4,7 @@ namespace App\Common\Entity;
 
 use App\Common\Service\Redis\Redis;
 use App\Common\Utils\Language;
-use App\Utils\Random;
+use App\Common\Utils\Random;
 use Doctrine\Common\Collections\ArrayCollection;
 use Ramsey\Uuid\Uuid;
 use Doctrine\ORM\Mapping as ORM;

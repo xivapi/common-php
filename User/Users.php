@@ -11,7 +11,6 @@ use App\Common\Repository\UserRepository;
 use App\Common\ServicesThirdParty\Discord\Discord;
 use Delight\Cookie\Cookie;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 

@@ -9,6 +9,10 @@ use GuzzleHttp\RequestOptions;
 use Ramsey\Uuid\Uuid;
 
 /**
+ * todo - this needs to be split from XIVAPI due to its dependency on ApiRequest
+ *
+ * FOR XIVAPI ONRY
+ *
  * Interact with Google Analytics
  * Guide: https://developers.google.com/analytics/devguides/collection/protocol/v1/devguide
  *
