@@ -3,6 +3,7 @@
 namespace App\Common\Twig;
 
 use App\Common\Service\Redis\Redis;
+use App\Common\Utils\Environment;
 use App\Common\Utils\Language;
 use App\Common\Utils\SiteVersion;
 use App\Common\Utils\Time;
@@ -30,9 +31,12 @@ class AppExtension extends AbstractExtension
     public function getFunctions()
     {
         return [
+            new TwigFunction('env',         [$this, 'getEnvVariable']),
+            new TwigFunction('environment', [$this, 'getEnvironment']),
+            
             new TwigFunction('siteVersion', [$this, 'getVersion']),
             new TwigFunction('favIcon',     [$this, 'getFavIcon']),
-            new TwigFunction('env',         [$this, 'getEnvVariable']),
+            
             new TwigFunction('cache',       [$this, 'getCached']),
             new TwigFunction('timezone',    [$this, 'getTimezone']),
             new TwigFunction('timezones',   [$this, 'getTimezones']),
@@ -97,6 +101,14 @@ class AppExtension extends AbstractExtension
     {
         return getenv($string);
     }
+    
+    /**
+     * Get the current site environment
+     */
+    public function getEnvironment()
+    {
+        return constant(Environment::CONSTANT);
+    }
 
     /**
      * Get Users Timezone
@@ -105,7 +117,6 @@ class AppExtension extends AbstractExtension
     {
         return Time::timezone();
     }
-
 
     public function getCookie($value, $defaultValue = null)
     {

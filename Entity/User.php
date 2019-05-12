@@ -3,10 +3,10 @@
 namespace App\Common\Entity;
 
 use App\Common\Constants\PatreonConstants;
+use App\Common\Constants\RateLimitConstants;
 use App\Common\Constants\UserConstants;
 use App\Common\User\SignInDiscord;
 use App\Common\Utils\Random;
-use App\Service\API\ApiRequest;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Uuid;
@@ -96,6 +96,11 @@ class User
      * @ORM\Column(type="text", nullable=true)
      */
     private $permissions;
+    /**
+     * @var bool
+     * @ORM\Column(type="boolean", options={"default": false})
+     */
+    private $admin = false;
     
     // -- mogboard
     
@@ -135,11 +140,6 @@ class User
      * @ORM\Column(type="boolean")
      */
     private $alertsUpdate = false;
-    /**
-     * @var int
-     * @ORM\Column(type="integer")
-     */
-    private $alertsNotificationCount = 0;
     
     // -- discord sso
 
@@ -169,7 +169,7 @@ class User
      */
     private $ssoDiscordTokenRefresh;
     
-    // -- xivapi
+    // -- xivapi keys
     
     /**
      * User has 1 Key
@@ -187,7 +187,7 @@ class User
      * @var int
      * @ORM\Column(type="integer", options={"default" : 0})
      */
-    private $apiRateLimit = ApiRequest::MAX_RATE_LIMIT_KEY;
+    private $apiRateLimit = RateLimitConstants::MAX_RATE_LIMIT_KEY;
     
     // ------------------------
 
@@ -220,6 +220,89 @@ class User
         return $this->avatar;
     }
     
+    public function getCharacterPassPhrase()
+    {
+        return strtoupper('mb'. substr(sha1($this->id), 0, 5));
+    }
+    
+    public function getMainCharacter()
+    {
+        /** @var UserCharacter $character */
+        foreach ($this->characters as $character) {
+            if ($character->isMain()) {
+                return $character;
+            }
+        }
+        
+        return null;
+    }
+    
+    /**
+     * Get personal lists
+     */
+    public function getCustomLists()
+    {
+        $lists = [];
+        
+        /** @var UserList $list */
+        foreach ($this->lists as $list) {
+            if ($list->isCustom()) {
+                continue;
+            }
+            
+            $lists[] = $list;
+        }
+        
+        return $lists;
+    }
+    
+    public function hasFavouriteItem(int $itemId)
+    {
+        /** @var UserList $list */
+        foreach ($this->lists as $list) {
+            if ($list->getCustomType() === UserList::CUSTOM_FAVOURITES && $list->hasItem($itemId)) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    public function getPatreonTierNumber(): ?int
+    {
+        return $this->patron;
+    }
+    
+    public function getPatreonTier(): string
+    {
+        return PatreonConstants::PATREON_TIERS[$this->patron] ?? null;
+    }
+    
+    public function isPatron(int $tier = null): bool
+    {
+        return $tier ? $this->patron === $tier : $this->patron > 0;
+    }
+    
+    public function getAlertsPerItem()
+    {
+        $itemAlerts = [];
+        
+        /** @var UserAlert $alert */
+        foreach ($this->alerts as $alert) {
+            $itemId = $alert->getItemId();
+            
+            if (!isset($itemAlerts[$itemId])) {
+                $itemAlerts[$itemId] = [];
+            }
+            
+            $itemAlerts[$itemId][] = $alert;
+        }
+        
+        return $itemAlerts;
+    }
+    
+    // ------------------------
+    
     public function getId(): string
     {
         return $this->id;
@@ -228,7 +311,6 @@ class User
     public function setId(string $id)
     {
         $this->id = $id;
-        
         return $this;
     }
     
@@ -240,7 +322,6 @@ class User
     public function setAdded(int $added)
     {
         $this->added = $added;
-        
         return $this;
     }
     
@@ -252,7 +333,6 @@ class User
     public function setBanned(bool $banned)
     {
         $this->banned = $banned;
-        
         return $this;
     }
     
@@ -264,7 +344,6 @@ class User
     public function setNotes(string $notes)
     {
         $this->notes = $notes;
-        
         return $this;
     }
     
@@ -276,7 +355,6 @@ class User
     public function setSso(string $sso)
     {
         $this->sso = $sso;
-        
         return $this;
     }
     
@@ -288,7 +366,6 @@ class User
     public function setUsername(string $username)
     {
         $this->username = $username;
-        
         return $this;
     }
     
@@ -300,7 +377,6 @@ class User
     public function setEmail(string $email)
     {
         $this->email = $email;
-        
         return $this;
     }
     
@@ -312,7 +388,6 @@ class User
     public function setPatron(int $patron)
     {
         $this->patron = $patron;
-        
         return $this;
     }
     
@@ -324,7 +399,6 @@ class User
     public function setSessions($sessions)
     {
         $this->sessions = $sessions;
-        
         return $this;
     }
     
@@ -336,7 +410,24 @@ class User
     public function setPermissions(string $permissions)
     {
         $this->permissions = $permissions;
-        
+        return $this;
+    }
+    
+    public function isAdmin(): bool
+    {
+        return $this->admin;
+    }
+    
+    public function mustBeAdmin()
+    {
+        if ($this->admin == false) {
+            throw new \Exception('Unauthorised');
+        }
+    }
+    
+    public function setAdmin(bool $admin)
+    {
+        $this->admin = $admin;
         return $this;
     }
     
@@ -348,7 +439,6 @@ class User
     public function setLists($lists)
     {
         $this->lists = $lists;
-        
         return $this;
     }
     
@@ -360,7 +450,6 @@ class User
     public function setReports($reports)
     {
         $this->reports = $reports;
-        
         return $this;
     }
     
@@ -372,7 +461,12 @@ class User
     public function setCharacters($characters)
     {
         $this->characters = $characters;
-        
+        return $this;
+    }
+    
+    public function addCharacter(UserCharacter $character)
+    {
+        $this->characters[] = $character;
         return $this;
     }
     
@@ -384,7 +478,12 @@ class User
     public function setRetainers($retainers)
     {
         $this->retainers = $retainers;
-        
+        return $this;
+    }
+    
+    public function addRetainer(UserRetainer $retainer)
+    {
+        $this->retainers[] = $retainer;
         return $this;
     }
     
@@ -396,8 +495,12 @@ class User
     public function setAlerts($alerts)
     {
         $this->alerts = $alerts;
-        
         return $this;
+    }
+    
+    public function totalAlerts()
+    {
+        return $this->alerts ? count($this->alerts) : 0;
     }
     
     public function getAlertsMax(): int
@@ -408,7 +511,6 @@ class User
     public function setAlertsMax(int $alertsMax)
     {
         $this->alertsMax = $alertsMax;
-        
         return $this;
     }
     
@@ -420,7 +522,6 @@ class User
     public function setAlertsExpiry(int $alertsExpiry)
     {
         $this->alertsExpiry = $alertsExpiry;
-        
         return $this;
     }
     
@@ -432,19 +533,6 @@ class User
     public function setAlertsUpdate(bool $alertsUpdate)
     {
         $this->alertsUpdate = $alertsUpdate;
-        
-        return $this;
-    }
-    
-    public function getAlertsNotificationCount(): int
-    {
-        return $this->alertsNotificationCount;
-    }
-    
-    public function setAlertsNotificationCount(int $alertsNotificationCount)
-    {
-        $this->alertsNotificationCount = $alertsNotificationCount;
-        
         return $this;
     }
     
@@ -456,7 +544,6 @@ class User
     public function setSsoDiscordId(string $ssoDiscordId)
     {
         $this->ssoDiscordId = $ssoDiscordId;
-        
         return $this;
     }
     
@@ -468,7 +555,6 @@ class User
     public function setSsoDiscordAvatar(string $ssoDiscordAvatar)
     {
         $this->ssoDiscordAvatar = $ssoDiscordAvatar;
-        
         return $this;
     }
     
@@ -480,7 +566,6 @@ class User
     public function setSsoDiscordTokenExpires(int $ssoDiscordTokenExpires)
     {
         $this->ssoDiscordTokenExpires = $ssoDiscordTokenExpires;
-        
         return $this;
     }
     
@@ -492,7 +577,6 @@ class User
     public function setSsoDiscordTokenAccess(string $ssoDiscordTokenAccess)
     {
         $this->ssoDiscordTokenAccess = $ssoDiscordTokenAccess;
-        
         return $this;
     }
     
@@ -504,7 +588,6 @@ class User
     public function setSsoDiscordTokenRefresh(string $ssoDiscordTokenRefresh)
     {
         $this->ssoDiscordTokenRefresh = $ssoDiscordTokenRefresh;
-        
         return $this;
     }
     
@@ -516,7 +599,6 @@ class User
     public function setApiPublicKey(string $apiPublicKey)
     {
         $this->apiPublicKey = $apiPublicKey;
-        
         return $this;
     }
     
@@ -528,7 +610,6 @@ class User
     public function setApiAnalyticsKey(string $apiAnalyticsKey)
     {
         $this->apiAnalyticsKey = $apiAnalyticsKey;
-        
         return $this;
     }
     
@@ -540,7 +621,6 @@ class User
     public function setApiRateLimit(int $apiRateLimit)
     {
         $this->apiRateLimit = $apiRateLimit;
-        
         return $this;
     }
 }

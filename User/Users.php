@@ -6,12 +6,13 @@ use App\Common\Constants\PatreonConstants;
 use App\Common\Entity\User;
 use App\Common\Entity\UserAlert;
 use App\Common\Entity\UserSession;
-use App\Exception\ApiUnknownPrivateKeyException;
-use App\Repository\UserRepository;
-use App\Service\ThirdParty\Discord\Discord;
+use App\Common\Exceptions\ApiUnknownPrivateKeyException;
+use App\Common\Repository\UserRepository;
+use App\Common\ServicesThirdParty\Discord\Discord;
 use Delight\Cookie\Cookie;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Users
@@ -193,6 +194,22 @@ class Users
     }
     
     /**
+     * Set the last url the user was on
+     */
+    public function setLastUrl(Request $request)
+    {
+        $request->getSession()->set('last_url', $request->getUri());
+    }
+    
+    /**
+     * Get the last url
+     */
+    public function getLastUrl(Request $request)
+    {
+        return $request->getSession()->get('last_url');
+    }
+    
+    /**
      * @param User $user
      */
     public function checkPatreonTierForUser(User $user)
@@ -242,12 +259,17 @@ class Users
             return;
         }
         
+        // 1 hour timeout so we are not constantly updating this users alerts.
+        $timeout = time() - (60 * 60);
+        
         /** @var UserAlert $alert */
         foreach ($user->getAlerts() as $alert) {
-            $alert->setExpiry(
-                time() + $user->getAlertsExpiry()
-            );
+            // ignore if expiry is above timeout
+            if ($alert->getExpiry() > $timeout) {
+                continue;
+            }
             
+            $alert->setExpiry(time() + $user->getAlertsExpiry());
             $this->em->persist($alert);
         }
         

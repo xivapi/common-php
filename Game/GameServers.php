@@ -3,9 +3,12 @@
 namespace App\Common\Game;
 
 use App\Common\Exceptions\CompanionMarketServerException;
+use Delight\Cookie\Cookie;
 
 class GameServers
 {
+    const DEFAULT_SERVER = 'Phoenix';
+    
     const MARKET_OFFLINE = [
         // JP Servers
         1,2,3,4,5,6,9,12,14,17,22,23,26,27,29,30,32,38,39,45,48,49,51,54,55,56,57,58,60,61,62,64
@@ -186,6 +189,14 @@ class GameServers
         ],
 
     ];
+    
+    /**
+     * Get the users current server
+     */
+    public static function getServer(): string
+    {
+        return Cookie::get('mogboard_server') ?: self::DEFAULT_SERVER;
+    }
 
     /**
      * Get a server id from a server string
