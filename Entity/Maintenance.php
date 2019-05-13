@@ -5,7 +5,7 @@ namespace App\Common\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Table(name="maintenance_companion")
+ * @ORM\Table(name="maintenance")
  * @ORM\Entity(repositoryClass="App\Common\Repository\MaintenanceRepository")
  */
 class Maintenance
@@ -17,6 +17,16 @@ class Maintenance
      * @ORM\Column(type="integer")
      */
     private $id;
+    /**
+     * @var int
+     * @ORM\Column(type="integer")
+     */
+    private $mogboard = 0;
+    /**
+     * @var int
+     * @ORM\Column(type="integer")
+     */
+    private $xivapi = 0;
     /**
      * @var int
      * @ORM\Column(type="integer")
@@ -41,6 +51,28 @@ class Maintenance
     public function setId(int $id)
     {
         $this->id = $id;
+        return $this;
+    }
+
+    public function getMogboard(): int
+    {
+        return $this->mogboard;
+    }
+
+    public function setMogboard(int $mogboard)
+    {
+        $this->mogboard = $mogboard;
+        return $this;
+    }
+
+    public function getXivapi(): int
+    {
+        return $this->xivapi;
+    }
+
+    public function setXivapi(int $xivapi)
+    {
+        $this->xivapi = $xivapi;
         return $this;
     }
 
