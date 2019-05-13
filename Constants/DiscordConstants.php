@@ -21,7 +21,7 @@ class DiscordConstants
     const ROOM_MOG                  = 538316536688017418;
     const ROOM_ERRORS               = 569968196455759907;
     const ROOM_MB_FEEDBACK          = 574593645626523669;
-    const ROOM_SER_AYMERIC          = 569118527345131561;
+    const ROOM_SER_AYMERIC          = 569968196455759907;
 
     // ROLES
     const ROLE_PATREON_HEALER       = 563452038982270989;
