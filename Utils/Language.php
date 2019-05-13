@@ -2,6 +2,7 @@
 
 namespace App\Common\Utils;
 
+use Delight\Cookie\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -44,10 +45,10 @@ class Language
      */
     public static function register(Request $request): void
     {
-        self::$lang = $request->get('language') ?? self::DEFAULT;
+        self::$lang = $request->get('language') ?? self::userLanguage();
         
         if (!in_array(self::$lang, self::LANGUAGES)) {
-            self::$lang = self::DEFAULT;
+            self::$lang = self::userLanguage();
         }
     }
 
@@ -84,5 +85,13 @@ class Language
         }
         
         return $data;
+    }
+
+    /**
+     * Get the users language
+     */
+    public static function userLanguage()
+    {
+        return Cookie::get('mogboard_language') ?: self::DEFAULT;
     }
 }
