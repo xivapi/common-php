@@ -29,6 +29,11 @@ class ExceptionListener implements EventSubscriberInterface
      */
     public function onKernelException(GetResponseForExceptionEvent $event)
     {
+        // mogboard does not throw custom error
+        if (getenv('SITE_CONFIG_NAME') === 'MOGBOARD') {
+            return null;
+        }
+        
         $ex = $event->getException();
 
         // if config enabled to show errors and app env is prod.
@@ -60,7 +65,7 @@ class ExceptionListener implements EventSubscriberInterface
 
         $json = (Object)[
             'Error'   => true,
-            'Subject' => 'XIVAPI Service Error',
+            'Subject' => getenv('SITE_CONFIG_NAME') .' ERROR',
             'Note'    => "Get on discord: https://discord.gg/MFFVHWC and complain to @Vekien :)",
             'Message' => $message,
             'Hash'    => sha1($message),

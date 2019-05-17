@@ -13,7 +13,6 @@ class UserList
 {
     const CUSTOM_FAVOURITES = 10;
     const CUSTOM_RECENTLY_VIEWED = 20;
-    
     const MAX_ITEMS = 20;
     
     /**
@@ -28,11 +27,6 @@ class UserList
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      */
     private $user;
-    /**
-     * @var string
-     * @ORM\Column(type="string", length=100)
-     */
-    public $slug;
     /**
      * @var int
      * @ORM\Column(type="integer")
@@ -65,29 +59,6 @@ class UserList
         $this->added = time();
     }
 
-    /**
-     * Set a unique slug, this allows access via a "name"
-     */
-    public function setSlug()
-    {
-        if (empty($this->name)) {
-            throw new \Exception("List name cannot be empty");
-        }
-
-        if (empty($this->user)) {
-            throw new \Exception("A user is required when creating a list");
-        }
-
-        $this->slug = sha1($this->user->getId() . strtolower(trim($this->name)));
-
-        return $this;
-    }
-    
-    public function getSlug(): string
-    {
-        return $this->slug;
-    }
-    
     public function getId(): string
     {
         return $this->id;

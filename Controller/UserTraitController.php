@@ -4,6 +4,7 @@ namespace App\Common\Controller;
 
 use App\Common\User\SignInDiscord;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 
 trait UserTraitController
 {
