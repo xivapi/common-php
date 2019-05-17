@@ -22,7 +22,14 @@ class DescriptionFormatter
         $descriptionUiColors = explode(PHP_EOL, $descriptionUiColors);
 
         foreach ($descriptionUiColors as $row) {
-            [$id, $colourA, $colourB] = str_getcsv($row);
+            $line    = str_getcsv($row);
+            $id      = $line[0] ?? null;
+            $colourA = $line[0] ?? null;
+            
+            if (empty($id) || empty($colourA)) {
+                continue;
+            }
+            
             $this->colours[$id] = $colourA;
         }
         
