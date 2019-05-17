@@ -32,11 +32,6 @@ class UserRetainer
     private $uniq;
     /**
      * @var string
-     * @ORM\Column(type="string", length=100)
-     */
-    private $slug;
-    /**
-     * @var string
      * @ORM\Column(type="string", length=100, nullable=true)
      */
     private $name;
@@ -55,11 +50,6 @@ class UserRetainer
      * @ORM\Column(type="boolean", options={"default": false})
      */
     private $confirmed = false;
-    /**
-     * @var boolean
-     * @ORM\Column(type="boolean", options={"default": false})
-     */
-    private $hidden = false;
     /**
      * @var int
      * @ORM\Column(type="integer")
@@ -140,28 +130,6 @@ class UserRetainer
         return $this;
     }
 
-    public function getSlug(): string
-    {
-        return $this->slug;
-    }
-
-    public function setSlug()
-    {
-        if (empty($this->server)) {
-            throw new \Exception('Please set the server before setting the retainer slug.');
-        }
-
-        // slug = 1a2b-name-server
-        $this->slug = strtolower(sprintf(
-            'mb-%s-%s-%s',
-            mt_rand(1111,9999),
-            preg_replace("/[^A-Za-z]/", '', strtolower($this->name)),
-            $this->server
-        ));
-
-        return $this;
-    }
-
     public function getName(): ?string
     {
         return $this->name;
@@ -213,18 +181,6 @@ class UserRetainer
     public function getConfirmItem(): ?int
     {
         return $this->confirmItem;
-    }
-    
-    public function isHidden(): bool
-    {
-        return $this->hidden;
-    }
-    
-    public function setHidden(bool $hidden)
-    {
-        $this->hidden = $hidden;
-        
-        return $this;
     }
     
     public function setConfirmItem(int $confirmItem)
