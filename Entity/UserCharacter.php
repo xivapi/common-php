@@ -88,9 +88,9 @@ class UserCharacter
         return $this;
     }
 
-    public function getLodestoneId(): int
+    public function getLodestoneId(): ?int
     {
-        return $this->lodestoneId;
+        return $this->lodestoneId ?: null;
     }
 
     public function setLodestoneId(int $lodestoneId)
