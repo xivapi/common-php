@@ -23,16 +23,12 @@ trait UserTraitController
      */
     public function loginDiscordResponse(Request $request)
     {
-        try {
-            if ($request->get('error') == 'access_denied') {
-                return $this->redirectToRoute('home');
-            }
-    
-            $this->users->setSsoProvider(new SignInDiscord($request))->authenticate();
+        if ($request->get('error') == 'access_denied') {
             return $this->redirectToRoute('home');
-        } catch (\Exception $ex) {
-            return $this->redirectToRoute('account_login_failed');
         }
+    
+        $this->users->setSsoProvider(new SignInDiscord($request))->authenticate();
+        return $this->redirectToRoute('home');
     }
     
     /**

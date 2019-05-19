@@ -244,8 +244,30 @@ class Users
             ->setAlertsUpdate($benefits['UPDATE_TIMEOUT']);
         
         $this->em->persist($user);
+        $this->em->flush();
+    }
+    
+    /**
+     * Sets users last online time, within 1 hour
+     */
+    public function setLastOnline()
+    {
+        $user = $this->getUser(false);
+    
+        if ($user === null) {
+            return;
+        }
+    
+        // 1 hour timeout so we are not constantly updating this user
+        $timeout = time() - (60 * 60);
+        
+        if ($user->getLastOnline() < $timeout) {
+            $user->setLastOnline(time());
+            $this->em->persist($user);
             $this->em->flush();
         }
+    }
+    
 
     /**
      * Extends the expiry time of the users alerts.

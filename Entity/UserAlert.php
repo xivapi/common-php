@@ -188,6 +188,7 @@ class UserAlert
     private $keepUpdated = false;
     /**
      * @ORM\OneToMany(targetEntity="UserAlertEvent", mappedBy="userAlert", cascade={"remove"}, orphanRemoval=true)
+     * @ORM\OrderBy({"added" = "DESC"})
      */
     private $events;
 
@@ -534,9 +535,27 @@ class UserAlert
         return $this;
     }
     
-    public function recentEvent(): UserAlertEvent
+    public function recentEvent()
     {
-        return $this->events->last();
+        /** @var UserAlertEvent $event */
+        $event = $this->events->last() ?: null;
+        
+        if ($event == null) {
+            return null;
+        }
+    
+        /**
+         * Build mini market snapshot
+         */
+        $market = [];
+        foreach ($event->getData() as $row) {
+            $server = $row[0];
+            $prices = $row[1];
+            $prices->_Server = $server;
+            $market[] = $prices;
+        }
+        
+        return $market;
     }
     
     public function isKeepUpdated(): bool

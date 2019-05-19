@@ -9,4 +9,5 @@ class UserConstants
     const ENDPOINT_SUSPENDED = false;
     const SESSION_LENGTH     = 250;
     const DEFAULT_PATRON     = 0;
+    const MAX_LISTS          = 12;
 }

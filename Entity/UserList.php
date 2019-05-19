@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class UserList
 {
+    const NORMAL_TYPE = 0;
     const CUSTOM_FAVOURITES = 10;
     const CUSTOM_RECENTLY_VIEWED = 20;
     const MAX_ITEMS = 20;
@@ -20,7 +21,7 @@ class UserList
      * @ORM\Id
      * @ORM\Column(type="guid")
      */
-    public $id;
+    private $id;
     /**
      * @var User
      * @ORM\ManyToOne(targetEntity="User", inversedBy="lists")
@@ -31,12 +32,17 @@ class UserList
      * @var int
      * @ORM\Column(type="integer")
      */
-    public $added;
+    private $added;
+    /**
+     * @var int
+     * @ORM\Column(type="integer")
+     */
+    private $updated;
     /**
      * @var string
      * @ORM\Column(type="string", length=100)
      */
-    public $name;
+    private $name;
     /**
      * @var boolean
      * @ORM\Column(type="boolean", options={"default": false})
@@ -46,12 +52,12 @@ class UserList
      * @var int
      * @ORM\Column(type="integer", nullable=true)
      */
-    private $customType;
+    private $customType = self::NORMAL_TYPE;
     /**
      * @var array
      * @ORM\Column(type="array")
      */
-    public $items = [];
+    private $items = [];
     
     public function __construct()
     {
@@ -95,6 +101,17 @@ class UserList
         return $this;
     }
     
+    public function getUpdated(): int
+    {
+        return $this->updated;
+    }
+    
+    public function setUpdated(int $updated)
+    {
+        $this->updated = $updated;
+        return $this;
+    }
+    
     public function getName(): string
     {
         return $this->name;
@@ -133,7 +150,7 @@ class UserList
     
     public function getItems(): array
     {
-        return $this->items;
+        return array_values($this->items);
     }
     
     public function setItems(array $items)

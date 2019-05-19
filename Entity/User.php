@@ -45,6 +45,11 @@ class User
      */
     private $added;
     /**
+     * @var int
+     * @ORM\Column(type="integer")
+     */
+    private $lastOnline;
+    /**
      * @var bool
      * @ORM\Column(type="boolean", name="is_banned", options={"default" : 0})
      */
@@ -106,6 +111,7 @@ class User
     
     /**
      * @ORM\OneToMany(targetEntity="UserList", mappedBy="user")
+     * @ORM\OrderBy({"updated" = "DESC"})
      */
     private $lists;
     /**
@@ -123,6 +129,7 @@ class User
     private $retainers;
     /**
      * @ORM\OneToMany(targetEntity="UserAlert", mappedBy="user")
+     * @ORM\OrderBy({"added" = "DESC"})
      */
     private $alerts;
     /**
@@ -322,6 +329,18 @@ class User
     public function setAdded(int $added)
     {
         $this->added = $added;
+        return $this;
+    }
+    
+    public function getLastOnline(): int
+    {
+        return $this->lastOnline;
+    }
+    
+    public function setLastOnline(int $lastOnline)
+    {
+        $this->lastOnline = $lastOnline;
+        
         return $this;
     }
     
