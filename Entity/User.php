@@ -48,7 +48,7 @@ class User
      * @var int
      * @ORM\Column(type="integer")
      */
-    private $lastOnline;
+    private $lastOnline = 0;
     /**
      * @var bool
      * @ORM\Column(type="boolean", name="is_banned", options={"default" : 0})
@@ -202,6 +202,7 @@ class User
     {
         $this->id           = Uuid::uuid4();
         $this->added        = time();
+        $this->lastOnline   = time();
         $this->apiPublicKey = Random::randomAccessKey();
         $this->sessions     = new ArrayCollection();
         
