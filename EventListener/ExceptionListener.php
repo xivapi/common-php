@@ -8,7 +8,9 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
 use App\Common\Constants\DiscordConstants;
 use App\Common\Service\Redis\Redis;
@@ -91,6 +93,8 @@ class ExceptionListener implements EventSubscriberInterface
          */
         $validExceptions = [
             BasicException::class,
+            UnauthorizedHttpException::class,
+            NotAcceptableHttpException::class,
             NotFoundHttpException::class,
             NotFoundException::class
         ];
