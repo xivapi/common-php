@@ -2,10 +2,13 @@
 
 namespace App\Common\EventListener;
 
+use App\Common\Exceptions\BasicException;
+use Lodestone\Exceptions\NotFoundException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
 use App\Common\Constants\DiscordConstants;
 use App\Common\Service\Redis\Redis;
@@ -82,21 +85,27 @@ class ExceptionListener implements EventSubscriberInterface
                 'Env'     => constant(Environment::CONSTANT),
             ],
         ];
-    
-        // some errors should not submit to Discord
-        $ignore = false;
-        $ignoreCodes = [404, 406];
-        
-        if (in_array($json->Debug->Code, $ignoreCodes) || stripos($json->Debug->File, 'vagrant') !== false) {
-            $ignore = true;
+
+        /**
+         * Send error to discord if not sent within the hour AND the exception is not a valid one.
+         */
+        $validExceptions = [
+            BasicException::class,
+            NotFoundHttpException::class,
+            NotFoundException::class
+        ];
+
+        if (Redis::Cache()->get(__METHOD__ . $json->hash) == null && !in_array($json->Ex, $validExceptions)) {
+            Redis::Cache()->set(__METHOD__ . $json->hash, true);
+            Discord::mog()->sendMessage(
+                DiscordConstants::ROOM_ERRORS,
+                "```json\n". json_encode($json, JSON_PRETTY_PRINT) ."\n```"
+            );
         }
 
-        // decide if to send a message to discord
-        if ($ignore === false && Redis::Cache()->get("error_{$json->Hash}") == null) {
-            Redis::Cache()->set("error_{$json->Hash}", true);
-            Discord::mog()->sendMessage(DiscordConstants::ROOM_ERRORS, "```". json_encode($json, JSON_PRETTY_PRINT) ."```");
-        }
-
+        /**
+         * Return a JSON error to user
+         */
         $response = new JsonResponse($json, $json->Debug->Code);
         $response->headers->set('Content-Type','application/json');
         $response->headers->set('Access-Control-Allow-Origin', '*');
