@@ -558,6 +558,18 @@ class UserAlert
         return $market;
     }
     
+    public function recentEventDate()
+    {
+        /** @var UserAlertEvent $event */
+        $event = $this->events->last() ?: null;
+    
+        if ($event == null) {
+            return null;
+        }
+        
+        return $event->getAdded();
+    }
+    
     public function isKeepUpdated(): bool
     {
         return $this->keepUpdated;
