@@ -39,12 +39,4 @@ trait UserTraitController
         $this->users->logout();
         return $this->redirectToRoute('home');
     }
-    
-    /**
-     * @Route("/account/login/failed", name="account_login_failed")
-     */
-    public function loginFailed()
-    {
-        return $this->render('UserAccount/login_failed.html.twig');
-    }
 }
