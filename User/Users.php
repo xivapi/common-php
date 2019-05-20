@@ -57,7 +57,7 @@ class Users
         $session = Cookie::get(self::COOKIE_SESSION_NAME);
         if (!$session || $session === 'x') {
             if ($mustBeOnline) {
-                throw new NotFoundHttpException();
+                throw new NotFoundHttpException('You must be online to view this page.');
             }
             
             return null;
@@ -71,7 +71,7 @@ class Users
         $user = $session ? $session->getUser() : null;
         
         if ($mustBeOnline && !$user) {
-            throw new NotFoundHttpException();
+            throw new NotFoundHttpException('You must be online to view this page.');
         }
         
         if ($session) {
