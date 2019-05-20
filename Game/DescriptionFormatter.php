@@ -24,7 +24,7 @@ class DescriptionFormatter
         foreach ($descriptionUiColors as $row) {
             $line    = str_getcsv($row);
             $id      = $line[0] ?? null;
-            $colourA = $line[0] ?? null;
+            $colourA = $line[1] ?? null;
             
             if (empty($id) || empty($colourA)) {
                 continue;
