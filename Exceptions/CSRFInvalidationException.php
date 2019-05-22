@@ -2,9 +2,7 @@
 
 namespace App\Common\Exceptions;
 
-use Symfony\Component\HttpKernel\Exception\HttpException;
-
-class CSRFInvalidationException extends HttpException
+class CSRFInvalidationException extends \Exception
 {
     use ExceptionTrait;
 
