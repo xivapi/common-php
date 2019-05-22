@@ -290,6 +290,56 @@ class User
     {
         return $tier ? $this->patron === $tier : $this->patron > 0;
     }
+
+    public function isPatronAdventurer(): bool
+    {
+        return in_array($this->patron, [
+            PatreonConstants::PATREON_ADVENTURER,
+            PatreonConstants::PATREON_TANK,
+            PatreonConstants::PATREON_HEALER,
+            PatreonConstants::PATREON_DPS
+        ]);
+    }
+
+    public function isPatronTank(): bool
+    {
+        return in_array($this->patron, [
+            PatreonConstants::PATREON_TANK,
+            PatreonConstants::PATREON_HEALER,
+            PatreonConstants::PATREON_DPS
+        ]);
+    }
+
+    public function isPatronHealer(): bool
+    {
+        return in_array($this->patron, [
+            PatreonConstants::PATREON_HEALER,
+            PatreonConstants::PATREON_DPS
+        ]);
+    }
+
+    public function isPatronDps(): bool
+    {
+        return in_array($this->patron, [
+            PatreonConstants::PATREON_DPS
+        ]);
+    }
+
+    public function isPatronBenefit(): bool
+    {
+        return in_array($this->patron, [
+            PatreonConstants::PATREON_ADVENTURER,
+            PatreonConstants::PATREON_TANK,
+            PatreonConstants::PATREON_HEALER,
+            PatreonConstants::PATREON_DPS,
+            PatreonConstants::PATREON_BENEFIT,
+        ]);
+    }
+
+    public function getMaxBenefitFriends(): int
+    {
+        return PatreonConstants::FRIEND_BENEFIT_MAX[$this->patron] ?? 0;
+    }
     
     public function getAlertsPerItem()
     {
