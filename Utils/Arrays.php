@@ -54,7 +54,8 @@ class Arrays
                 }
 
                 if ($total < 0) {
-                    $total = 0;
+                    $columns[$i] = "{$col[0]}";
+                    continue;
                 }
             
                 $columns[$i] = "{$col[0]}.*{$total}.${col[1]}";

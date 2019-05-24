@@ -19,7 +19,15 @@ class PatreonConstants
         self::PATREON_DPS        => 'DPS',
         self::PATREON_BENEFIT    => 'Friendly Benefits',
     ];
-    
+
+    const FRIEND_BENEFIT_MAX = [
+        self::PATREON_ADVENTURER => 0,
+        self::PATREON_TANK       => 0,
+        self::PATREON_HEALER     => 10,
+        self::PATREON_DPS        => 50,
+        self::PATREON_BENEFIT    => 0,
+    ];
+
     const ALERT_DEFAULTS = [
         'MAX'                   => 5,
         'EXPIRY_TIMEOUT'        => (60 * 60 * 24 * 3),

@@ -4,8 +4,8 @@ namespace App\Common\Exceptions;
 
 trait ExceptionTrait
 {
-    public function __construct(int $code = null, string $message = null)
+    public function __construct($message = null, $code = null)
     {
-        parent::__construct($code ?: self::CODE, $message ?: self::MESSAGE);
+        parent::__construct($message ?: self::MESSAGE, $code ?: self::CODE);
     }
 }
