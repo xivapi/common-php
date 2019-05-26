@@ -448,6 +448,11 @@ class Users
      */
     private function removeBenefits(User $user)
     {
+        // Double check, we only want to modify benefit users.
+        if (!$user->isPatron(PatreonConstants::PATREON_BENEFIT)) {
+            return;
+        }
+        
         $benefits = PatreonConstants::ALERT_DEFAULTS;
 
         $user
