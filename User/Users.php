@@ -11,8 +11,10 @@ use App\Common\ServicesThirdParty\Discord\Discord;
 use App\Common\Exceptions\ApiUnknownPrivateKeyException;
 use Delight\Cookie\Cookie;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use XIVAPI\XIVAPI;
 
 class Users
 {
@@ -65,7 +67,7 @@ class Users
     
         /** @var UserSession $session */
         $session = $this->em->getRepository(UserSession::class)->findOneBy([
-            'session' => $session
+            'session' => $session,
         ]);
         
         $user = $session ? $session->getUser() : null;
@@ -175,7 +177,7 @@ class Users
         $this->save($user, $session);
         return [
             $user,
-            $session
+            $session,
         ];
     }
     
@@ -225,10 +227,14 @@ class Users
         }
         
         $tier = $response->data;
-        $tier = $tier ?: 0;
+        $tier = $tier ?: $user->getPatron();
         
         // set patreon tier
         $user->setPatron($tier);
+        
+        if ($user->getPatron() != PatreonConstants::PATREON_BENEFIT) {
+            $user->setPatronBenefitUser(null);
+        }
         
         /**
          * Alerts!
@@ -245,6 +251,19 @@ class Users
         
         $this->em->persist($user);
         $this->em->flush();
+        
+        /**
+         * Remove any benefit handouts
+         */
+        $users = $this->getRepository()->findBy([ 'patronBenefitUser' => $user->getId() ]);
+        
+        /** @var User $user */
+        foreach ($users as $user) {
+            if ($user->isPatron(PatreonConstants::PATREON_BENEFIT)) {
+                $this->removeBenefits($user);
+                continue;
+            }
+        }
     }
     
     /**
@@ -267,7 +286,6 @@ class Users
             $this->em->flush();
         }
     }
-    
 
     /**
      * Extends the expiry time of the users alerts.
@@ -309,5 +327,136 @@ class Users
             1 => $this->repository->findBy([ 'patron' => 1 ]),
             9 => $this->repository->findBy([ 'patron' => 9 ]),
         ];
+    }
+    
+    /**
+     * Get the number of benefit patrons this user has issued.
+     */
+    public function getBenefitCount(string $userId)
+    {
+        $members = $this->repository->findBy([ 'patronBenefitUser' => $userId ]);
+        return count($members);
+    }
+    
+    /**
+     * Check the handouts!
+     */
+    public function checkBenefitHandouts()
+    {
+        $console = new ConsoleOutput();
+        $console->writeln("Checking benefit handouts");
+        
+        // grab all users who have granted a benefit
+        $sql = "SELECT DISTINCT(patron_benefit_user) FROM users WHERE patron = 9";
+        $sql = $this->em->getConnection()->prepare($sql);
+        $sql->execute();
+        
+        $results = $sql->fetchAll();
+    
+        /**
+         * Grab all characters for those who have provided benefits
+         */
+        $userToCharacters = [];
+        foreach ($results as $row) {
+            $userId = $row['patron_benefit_user'];
+            
+            $sql = "SELECT lodestone_id FROM users_characters WHERE user_id = '{$userId}' AND main = 1 LIMIT 1";
+            $sql = $this->em->getConnection()->prepare($sql);
+            $sql->execute();
+            
+            $character = $sql->fetch();
+            $userToCharacters[$userId] = empty($character) ? null : $character['lodestone_id'];
+        }
+
+        $alertDefaults = PatreonConstants::ALERT_DEFAULTS;
+        
+        // process user handsouts
+        foreach ($userToCharacters as $userId => $lodestoneId) {
+            /**
+             * Grab friends
+             */
+            $friends = $lodestoneId ? (new XIVAPI())->queries([ 'data' => 'FR' ])->character->get($lodestoneId)->Friends : [];
+            
+            /**
+             * If the lodestone id is null, we will remove benefit status from all users who
+             * benefited from this character. We also do the same if this users friends
+             * list is empty (either private or they deleted all their friends)
+             */
+            if ($lodestoneId === null || empty($friends)) {
+                $console->writeln("Removing patron status for all members benefited from: {$userId}");
+                
+                $sql = "
+                    UPDATE users
+                    SET
+                      patron = 0,
+                      patron_benefit_user = NULL,
+                      alerts_max = {$alertDefaults['MAX']},
+                      alerts_expiry = {$alertDefaults['EXPIRY_TIMEOUT']},
+                      alerts_update = {$alertDefaults['UPDATE_TIMEOUT']}
+                    WHERE
+                      patron_benefit_user = '{$userId}';
+                ";
+    
+                $sql = $this->em->getConnection()->prepare($sql);
+                $sql->execute();
+                
+                continue;
+            }
+    
+            /**
+             * build a mini friends list
+             */
+            $miniFriendsList = [];
+            foreach ($friends as $friend) {
+                $miniFriendsList[] = $friend->ID;
+            }
+    
+            /**
+             * Now we need to get all the characters this user has provided benefits to
+             */
+            $users = $this->getRepository()->findBy([ 'patronBenefitUser' => $userId ]);
+            
+            /** @var User $user */
+            foreach ($users as $user) {
+                $userLodestoneId = $user->getMainCharacter()->getLodestoneId();
+                
+                /**
+                 * If this user is not a benefit user.... remove the benefit id and skip
+                 */
+                if (!$user->isPatron(PatreonConstants::PATREON_BENEFIT)) {
+                    $user->setPatronBenefitUser(null);
+                    $this->save($user);
+                    continue;
+                }
+    
+                /**
+                 * User is not in the friends list of the benefit provider
+                 */
+                if (!in_array($userLodestoneId, $miniFriendsList)) {
+                    $console->writeln("{$userId} is no longer friends with: {$user->getId()}");
+                    $this->removeBenefits($user);
+                    continue;
+                }
+            }
+        }
+        
+        $console->writeln("Done");
+    }
+    
+    /**
+     * Remove benefits from a specific user
+     */
+    private function removeBenefits(User $user)
+    {
+        $benefits = PatreonConstants::ALERT_DEFAULTS;
+
+        $user
+            ->setPatron(0)
+            ->setPatronBenefitUser(null)
+            ->setAlertsMax($benefits['MAX'])
+            ->setAlertsExpiry($benefits['EXPIRY_TIMEOUT'])
+            ->setAlertsUpdate($benefits['UPDATE_TIMEOUT']);
+        
+        $this->save($user);
     }
 }

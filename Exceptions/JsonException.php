@@ -2,7 +2,7 @@
 
 namespace App\Common\Exceptions;
 
-class GeneralJsonException extends \Exception
+class JsonException extends \Exception
 {
     use ExceptionTrait;
 

@@ -93,6 +93,11 @@ class User
      */
     private $patron = UserConstants::DEFAULT_PATRON;
     /**
+     * @var string
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private $patronBenefitUser;
+    /**
      * @ORM\OneToMany(targetEntity="UserSession", mappedBy="user")
      */
     private $sessions;
@@ -461,6 +466,18 @@ class User
         return $this;
     }
     
+    public function getPatronBenefitUser(): ?string
+    {
+        return $this->patronBenefitUser;
+    }
+    
+    public function setPatronBenefitUser(?string $patronBenefitUser = null)
+    {
+        $this->patronBenefitUser = $patronBenefitUser;
+        
+        return $this;
+    }
+    
     public function getSessions()
     {
         return $this->sessions;
@@ -490,7 +507,7 @@ class User
     
     public function mustBeAdmin()
     {
-        if ($this->admin == false) {
+        if ($this->admin != 1) {
             throw new \Exception('Unauthorised');
         }
     }

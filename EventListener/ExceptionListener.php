@@ -3,6 +3,7 @@
 namespace App\Common\EventListener;
 
 use App\Common\Exceptions\BasicException;
+use App\Common\Exceptions\JsonException;
 use Lodestone\Exceptions\NotFoundException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -34,27 +35,7 @@ class ExceptionListener implements EventSubscriberInterface
      */
     public function onKernelException(GetResponseForExceptionEvent $event)
     {
-        // mogboard does not throw custom error
-        if (getenv('SITE_CONFIG_NAME') === 'MOGBOARD') {
-            return null;
-        }
-        
-        $ex = $event->getException();
-
-        // if config enabled to show errors and app env is prod.
-        if (getenv('SITE_CONFIG_SHOW_ERRORS') == '1' && getenv('APP_ENV') == 'prod') {
-            print_r([
-                "#{$ex->getLine()} {$ex->getFile()}",
-                $ex->getMessage(),
-                $event->getException()->getTraceAsString()
-            ]);
-        }
-
-        // if we're showing errors, don't handle them (eg in dev mode)
-        if (getenv('SITE_CONFIG_SHOW_ERRORS') == '1') {
-            return null;
-        }
-
+        $ex   = $event->getException();
         $path = $event->getRequest()->getPathInfo();
         $pi   = pathinfo($path);
 
@@ -96,15 +77,18 @@ class ExceptionListener implements EventSubscriberInterface
             UnauthorizedHttpException::class,
             NotAcceptableHttpException::class,
             NotFoundHttpException::class,
-            NotFoundException::class
         ];
 
-        if (Redis::Cache()->get(__METHOD__ . $json->hash) == null && !in_array($json->Ex, $validExceptions)) {
-            Redis::Cache()->set(__METHOD__ . $json->hash, true);
+        if (Redis::Cache()->get(__METHOD__ . $json->Hash) == null && !in_array($json->Ex, $validExceptions)) {
+            Redis::Cache()->set(__METHOD__ . $json->Hash, true);
             Discord::mog()->sendMessage(
                 DiscordConstants::ROOM_ERRORS,
                 "```json\n". json_encode($json, JSON_PRETTY_PRINT) ."\n```"
             );
+        }
+        
+        if (get_class($ex) != JsonException::class) {
+            return;
         }
 
         /**
