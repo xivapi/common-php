@@ -108,6 +108,11 @@ class UserAlert
     private $added;
     /**
      * @var int
+     * @ORM\Column(type="integer")
+     */
+    private $activeTime;
+    /**
+     * @var int
      * @ORM\Column(type="integer", options={"default": 0})
      */
     private $lastChecked = 0;
@@ -194,10 +199,11 @@ class UserAlert
 
     public function __construct()
     {
-        $this->id     = Uuid::uuid4();
-        $this->added  = time();
-        $this->events = new ArrayCollection();
-        $this->uniq   = strtoupper(Random::randomHumanUniqueCode(8));
+        $this->id           = Uuid::uuid4();
+        $this->added        = time();
+        $this->activeTime   = time();
+        $this->events       = new ArrayCollection();
+        $this->uniq         = strtoupper(Random::randomHumanUniqueCode(8));
     }
 
     /**
@@ -307,7 +313,19 @@ class UserAlert
 
         return $this;
     }
-    
+
+    public function getActiveTime(): int
+    {
+        return $this->activeTime;
+    }
+
+    public function setActiveTime(int $activeTime)
+    {
+        $this->activeTime = $activeTime;
+
+        return $this;
+    }
+
     public function getLastChecked(): int
     {
         return $this->lastChecked;
