@@ -426,7 +426,9 @@ class Arrays
     
     public static function ensureStrictDataTypes($array): array
     {
-        $array = json_decode(json_encode($array), true);
+        if (is_object($array)) {
+            $array = json_decode(json_encode($array), true);
+        }
         
         foreach ($array as $i => $value) {
             if (is_array($value)) {
