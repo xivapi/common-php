@@ -70,10 +70,8 @@ class Language
         if (!in_array($language, self::LANGUAGES)) {
             $language = self::LANGUAGES[0];
         }
-        
-        if (is_object($data)) {
-            $data = json_decode(json_encode($data), true);
-        }
+    
+        $data = json_decode(json_encode($data), true);
     
         foreach ($data as $i => $value) {
             if (is_array($value)) {
