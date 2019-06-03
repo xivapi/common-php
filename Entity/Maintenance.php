@@ -121,6 +121,6 @@ class Maintenance
 
     public function isCompanionMaintenance()
     {
-        return $this->companion > 0;
+        return $this->companion != 0 && time() > $this->companion;
     }
 }
