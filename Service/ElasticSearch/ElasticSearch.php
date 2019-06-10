@@ -205,7 +205,7 @@ class ElasticSearch
 
     public function deleteDocument(string $index, string $type, string $id): void
     {
-        $this->client->indices()->delete([
+        $this->client->delete([
             'index' => $index,
             'type' => $type,
             'id' => $id,
