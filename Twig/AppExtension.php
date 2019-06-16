@@ -19,6 +19,7 @@ class AppExtension extends AbstractExtension
     public function getFilters()
     {
         return [
+            new TwigFilter('timestamp',     [$this, 'timestamp']),
             new TwigFilter('date',          [$this, 'getDate']),
             new TwigFilter('dateSimple',    [$this, 'getDateSimple']),
             new TwigFilter('dateRelative',  [$this, 'getDateRelative']),
@@ -44,6 +45,11 @@ class AppExtension extends AbstractExtension
         ];
     }
 
+    public function getTimestamp($string)
+    {
+        return (int)(new \DateTime($string, Time::timezone()))->format("U");
+    }
+    
     /**
      * Get date in a nice format.
      */
