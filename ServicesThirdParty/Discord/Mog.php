@@ -2,6 +2,7 @@
 
 namespace App\Common\ServicesThirdParty\Discord;
 
+use App\Common\Exceptions\BasicException;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 
@@ -20,6 +21,11 @@ class Mog
         array $query = null
     ) {
         $query['key'] = getenv('DISCORD_BOT_USAGE_KEY');
+        
+        // prevent issues when key is missing?
+        if (empty($query['key']) || strlen($query['key']) < 20) {
+            throw new BasicException("Missing API key for Discord Mognet Bot");
+        }
 
         $config = [
             'base_uri' => self::ENDPOINT,
