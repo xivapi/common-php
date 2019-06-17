@@ -61,7 +61,7 @@ class AppExtension extends AbstractExtension
             ? Carbon::now()->addSeconds($difference)->setTimezone(new CarbonTimeZone(Time::timezone()))
             : Carbon::now()->subSeconds($difference)->setTimezone(new CarbonTimeZone(Time::timezone()));
 
-        if ($difference > (60 * 60 * 10)) {
+        if ($difference > (60 * 60 * 24)) {
             return $carbon->format('jS M, H:i:s');
         }
 
@@ -77,7 +77,7 @@ class AppExtension extends AbstractExtension
         $difference = time() - $unix;
         $carbon     = Carbon::now()->subSeconds($difference)->setTimezone(new CarbonTimeZone(Time::timezone()));
 
-        if ($difference > (60 * 60 * 10)) {
+        if ($difference > (60 * 60 * 24)) {
             return $carbon->format('j M, H:i');
         }
 
