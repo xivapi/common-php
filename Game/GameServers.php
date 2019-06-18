@@ -84,6 +84,10 @@ class GameServers
         'Zalera',       # 63
         'Zeromus',      # 64
         'Zodiark',      # 65
+
+        // New for 5.0
+        'Spriggan',     # 66
+        'Twintania',    # 67
     ];
 
     const LIST_DC_REGIONS = [
@@ -139,13 +143,15 @@ class GameServers
             'Moogle',
             'Omega',
             'Ragnarok',
+            'Spriggan',
         ],
         'Light' => [
             'Lich',
             'Odin',
             'Phoenix',
             'Shiva',
-            'Zodiark'
+            'Zodiark',
+            'Twintania',
         ],
 
         // JP - Offline due to World Visit congestion issues.
