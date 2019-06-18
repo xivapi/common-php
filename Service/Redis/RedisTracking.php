@@ -39,6 +39,17 @@ class RedisTracking
         
         Redis::Cache()->set("mb_tracking", $tracking, 3600 * 24);
     }
+
+    /**
+     * Delete a stat
+     */
+    public static function delete(string $constant)
+    {
+        $tracking = Redis::Cache()->get('mb_tracking') ?: (Object)[];
+        unset($tracking->{$constant});
+
+        Redis::Cache()->set("mb_tracking", $tracking, 3600 * 24);
+    }
     
     /**
      * Get all tracking stats
