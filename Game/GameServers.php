@@ -199,9 +199,10 @@ class GameServers
     /**
      * Get the users current server
      */
-    public static function getServer(): string
+    public static function getServer(string $pvodied = null): string
     {
-        return Cookie::get('mogboard_server') ?: self::DEFAULT_SERVER;
+        $server = ucwords($pvodied ?: Cookie::get('mogboard_server'));
+        return in_array($server, self::LIST) ? $server : self::DEFAULT_SERVER;
     }
 
     /**
