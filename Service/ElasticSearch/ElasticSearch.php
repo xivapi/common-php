@@ -202,6 +202,17 @@ class ElasticSearch
             'id'    => $id,
         ]);
     }
+    
+    public function getDocumentsBulk(string $index, string $type, array $keys)
+    {
+        return $this->client->mget([
+            'index' => $index,
+            'type'  => $type,
+            "body" => [
+                'ids' => $keys
+            ]
+        ]);
+    }
 
     public function deleteDocument(string $index, string $type, string $id): void
     {
