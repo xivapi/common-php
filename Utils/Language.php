@@ -74,6 +74,10 @@ class Language
         if (is_object($data)) {
             $data = json_decode(json_encode($data), true);
         }
+        
+        if ($data == null) {
+            return null;
+        }
     
         foreach ($data as $i => $value) {
             if (is_array($value)) {
