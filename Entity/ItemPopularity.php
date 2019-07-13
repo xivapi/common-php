@@ -34,12 +34,12 @@ class ItemPopularity
     private $item;
     /**
      * @var int
-     * @ORM\Column(type="integer", length=32)
+     * @ORM\Column(name="`count`", type="integer", length=32)
      */
     private $count;
     /**
      * @var int
-     * @ORM\Column(type="integer", length=32)
+     * @ORM\Column(name="`rank`", type="integer", length=32)
      */
     private $rank;
     
