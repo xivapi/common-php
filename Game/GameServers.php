@@ -89,6 +89,8 @@ class GameServers
         'Spriggan',     # 66
         'Twintania',    # 67
     ];
+    
+    const MARKET_SERVER = 'Balmung';
 
     const LIST_DC_REGIONS = [
         'Elemental' => 1,
