@@ -9,6 +9,7 @@ use App\Common\Entity\UserSession;
 use App\Common\Repository\UserRepository;
 use App\Common\ServicesThirdParty\Discord\Discord;
 use App\Common\Exceptions\ApiUnknownPrivateKeyException;
+use App\Service\API\ApiPermissions;
 use Delight\Cookie\Cookie;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Output\ConsoleOutput;
@@ -86,6 +87,17 @@ class Users
         }
         
         return $user;
+    }
+    
+    public function hasPermission($code): bool
+    {
+        ApiPermissions::set($this->getUser()->getPermissions());
+        return ApiPermissions::has($code);
+    }
+    
+    public function hasAccess(): bool
+    {
+        return $this->hasPermission(ApiPermissions::PERMISSION_ACCESS);
     }
     
     /**
