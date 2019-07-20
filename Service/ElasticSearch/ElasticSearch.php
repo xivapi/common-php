@@ -6,8 +6,8 @@ use Elasticsearch\ClientBuilder;
 
 class ElasticSearch
 {
-    const NUMBER_OF_SHARDS    = 1;
-    const NUMBER_OF_REPLICAS  = 0;
+    const NUMBER_OF_SHARDS    = 3;
+    const NUMBER_OF_REPLICAS  = 1;
     const MAX_RESULT_WINDOW   = 150000;
     const MAX_BULK_DOCUMENTS  = 200;
     const MAX_FIELDS          = 100000;
@@ -22,7 +22,7 @@ class ElasticSearch
         }
 
         [$ip, $port] = explode(',', getenv($environment));
-        
+
         if (!$ip || !$port) {
             throw new \Exception('No ElasticSearch IP or PORT configured in env file');
         }
@@ -34,7 +34,12 @@ class ElasticSearch
             throw new \Exception("Could not connect to ElasticSearch.");
         }
     }
-    
+
+    public function putSettings($settings): void
+    {
+        $this->client->indices()->putSettings($settings);
+    }
+
     /**
      * Add index for game data
      */
@@ -82,7 +87,7 @@ class ElasticSearch
             ]
         ]);
     }
-    
+
     /**
      * Add Companion Index
      */
@@ -177,7 +182,7 @@ class ElasticSearch
         $params = [
             'body' => []
         ];
-    
+
         foreach ($documents as $id => $doc) {
             $base = [
                 'index' => [
@@ -186,11 +191,11 @@ class ElasticSearch
                     '_id'    => $id,
                 ]
             ];
-        
+
             $params['body'][] = $base;
             $params['body'][] = $doc;
         }
-    
+
         return $this->client->bulk($params);
     }
 
@@ -202,7 +207,7 @@ class ElasticSearch
             'id'    => $id,
         ]);
     }
-    
+
     public function getDocumentsBulk(string $index, string $type, array $keys)
     {
         return $this->client->mget([
