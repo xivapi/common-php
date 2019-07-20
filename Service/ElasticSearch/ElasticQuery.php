@@ -264,8 +264,7 @@ class ElasticQuery
     {
         $this->filters[] = [
             'terms' => [
-                $field                 => array_map('strtolower', $values),
-                'minimum_should_match' => 1
+                $field                 => array_map('strtolower', $values)
             ]
         ];
         return $this;
