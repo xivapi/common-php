@@ -21,18 +21,18 @@ class ElasticQuery
     public function getQuery(string $type = 'must'): array
     {
         $response = [];
-        
+
         if ($this->body || $this->filters) {
             $response['query'] = [
                 'bool' => []
             ];
         }
-        
+
         if ($this->limit) {
             $response['from'] = $this->limit[0];
             $response['size'] = $this->limit[1];
         }
-        
+
         if ($this->sorting) {
             $response['sort'] = $this->sorting;
         }
@@ -89,13 +89,13 @@ class ElasticQuery
         ];
         return $this;
     }
-    
+
     public function nested(string $path, array $query): self
     {
         $nested = array_merge($query, [
             "path" => $path
         ]);
-        
+
         $this->body[] = [
             "nested" => $nested
         ];
@@ -141,9 +141,9 @@ class ElasticQuery
     {
         $this->body[]['match'] = [
             $field => [
-                'query' => strtolower($value),
-                'fuzziness' => 'AUTO',
-                'prefix_length' => 1,
+                'query'          => strtolower($value),
+                'fuzziness'      => 'AUTO',
+                'prefix_length'  => 1,
                 'max_expansions' => 10,
             ]
         ];
@@ -221,7 +221,7 @@ class ElasticQuery
     public function queryMultiMatch(array $fields, string $value): self
     {
         $this->body[]['multi_match'] = [
-            'query' => strtolower($value),
+            'query'  => strtolower($value),
             'fields' => $fields
         ];
         return $this;
@@ -232,7 +232,7 @@ class ElasticQuery
     {
         $this->body[]['query_string'] = [
             'default_field' => $field,
-            'query' => $query
+            'query'         => $query
         ];
         return $this;
     }
@@ -241,9 +241,9 @@ class ElasticQuery
     public function querySimilar($field, string $value): self
     {
         $this->body[]['more_like_this'] = [
-            'fields' => [ $field ],
-            'like'   => $value,
-            'min_term_freq' => 1,
+            'fields'          => [$field],
+            'like'            => $value,
+            'min_term_freq'   => 1,
             'max_query_terms' => 12,
         ];
 
@@ -260,11 +260,22 @@ class ElasticQuery
         return $this;
     }
 
+    public function filterTerms(string $field, array $values): self
+    {
+        $this->filters[] = [
+            'terms' => [
+                $field                 => array_map('strtolower', $values),
+                'minimum_should_match' => 1
+            ]
+        ];
+        return $this;
+    }
+
     public function filterRange(string $field, string $value, string $condition): self
     {
         $this->filters[] = [
             'range' => [
-                $field => [ $condition => strtolower($value) ]
+                $field => [$condition => strtolower($value)]
             ]
         ];
         return $this;
