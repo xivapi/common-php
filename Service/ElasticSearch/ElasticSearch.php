@@ -6,11 +6,11 @@ use Elasticsearch\ClientBuilder;
 
 class ElasticSearch
 {
-    const NUMBER_OF_SHARDS    = 3;
-    const NUMBER_OF_REPLICAS  = 1;
-    const MAX_RESULT_WINDOW   = 150000;
-    const MAX_BULK_DOCUMENTS  = 200;
-    const MAX_FIELDS          = 100000;
+    const NUMBER_OF_SHARDS = 3;
+    const NUMBER_OF_REPLICAS = 1;
+    const MAX_RESULT_WINDOW = 150000;
+    const MAX_BULK_DOCUMENTS = 200;
+    const MAX_FIELDS = 100000;
 
     /** @var \Elasticsearch\Client */
     private $client;
@@ -21,14 +21,22 @@ class ElasticSearch
             return;
         }
 
-        [$ip, $port] = explode(',', getenv($environment));
+        [$ip, $port, $login, $password] = explode(',', getenv($environment));
 
         if (!$ip || !$port) {
             throw new \Exception('No ElasticSearch IP or PORT configured in env file');
         }
 
-        $hosts = sprintf("%s:%s", $ip, $port);
-        $this->client = ClientBuilder::create()->setHosts([ $hosts ])->build();
+        $hosts = [
+            'host' => $ip,
+            'port' => $port
+        ];
+
+        if (isset($login) && isset($password)) {
+            $config['user'] = $login;
+            $config['pass'] = $password;
+        }
+        $this->client = ClientBuilder::create()->setHosts([$hosts])->build();
 
         if (!$this->client) {
             throw new \Exception("Could not connect to ElasticSearch.");
@@ -47,38 +55,38 @@ class ElasticSearch
     {
         $this->client->indices()->create([
             'index' => $index,
-            'body' => [
+            'body'  => [
                 'settings' => [
-                    'analysis' => ElasticMapping::ANALYSIS,
-                    'number_of_shards'   => self::NUMBER_OF_SHARDS,
-                    'number_of_replicas' => self::NUMBER_OF_REPLICAS,
-                    'max_result_window'  => self::MAX_RESULT_WINDOW,
+                    'analysis'                         => ElasticMapping::ANALYSIS,
+                    'number_of_shards'                 => self::NUMBER_OF_SHARDS,
+                    'number_of_replicas'               => self::NUMBER_OF_REPLICAS,
+                    'max_result_window'                => self::MAX_RESULT_WINDOW,
                     'index.mapping.total_fields.limit' => self::MAX_FIELDS,
                 ],
                 'mappings' => [
                     'search' => [
-                        '_source' => [ 'enabled' => true ],
-                        'dynamic' => true,
+                        '_source'           => ['enabled' => true],
+                        'dynamic'           => true,
                         'dynamic_templates' => [
                             [
                                 'strings' => [
                                     'match_mapping_type' => 'string',
-                                    'mapping' => ElasticMapping::STRING
+                                    'mapping'            => ElasticMapping::STRING
                                 ],
-                            ],[
+                            ], [
                                 'integers' => [
                                     'match_mapping_type' => 'long',
-                                    'mapping' => ElasticMapping::INTEGER
+                                    'mapping'            => ElasticMapping::INTEGER
                                 ],
-                            ],[
+                            ], [
                                 'booleans' => [
                                     'match_mapping_type' => 'boolean',
-                                    'mapping' => ElasticMapping::BOOLEAN
+                                    'mapping'            => ElasticMapping::BOOLEAN
                                 ],
-                            ],[
+                            ], [
                                 'texts' => [
                                     'match_mapping_type' => 'string',
-                                    'mapping' => ElasticMapping::TEXT
+                                    'mapping'            => ElasticMapping::TEXT
                                 ]
                             ]
                         ],
@@ -95,53 +103,53 @@ class ElasticSearch
     {
         $this->client->indices()->create([
             'index' => $index,
-            'body' => [
+            'body'  => [
                 'settings' => [
-                    'analysis' => ElasticMapping::ANALYSIS,
-                    'number_of_shards'   => self::NUMBER_OF_SHARDS,
-                    'number_of_replicas' => self::NUMBER_OF_REPLICAS,
-                    'max_result_window'  => self::MAX_RESULT_WINDOW,
+                    'analysis'                         => ElasticMapping::ANALYSIS,
+                    'number_of_shards'                 => self::NUMBER_OF_SHARDS,
+                    'number_of_replicas'               => self::NUMBER_OF_REPLICAS,
+                    'max_result_window'                => self::MAX_RESULT_WINDOW,
                     'index.mapping.total_fields.limit' => self::MAX_FIELDS,
                 ],
                 'mappings' => [
                     // companion item price mapping
                     'companion' => [
-                        '_source' => [ "enabled" => true ],
+                        '_source'    => ["enabled" => true],
                         'properties' => [
-                            "ID"        => [ "type" => "text" ],
-                            "Server"    => [ "type" => "integer" ],
-                            "ItemID"    => [ "type" => "integer" ],
-                            "Prices"    => [
-                                "type"  => "nested",
+                            "ID"      => ["type" => "text"],
+                            "Server"  => ["type" => "integer"],
+                            "ItemID"  => ["type" => "integer"],
+                            "Prices"  => [
+                                "type"       => "nested",
                                 "properties" => [
-                                    "ID"                    => [ "type" => "text" ],
-                                    "Added"                 => [ "type" => "integer" ],
-                                    "IsCrafted"             => [ "type" => "boolean" ],
-                                    "IsHq"                  => [ "type" => "boolean" ],
-                                    "PricePerUnit"          => [ "type" => "integer" ],
-                                    "PriceTotal"            => [ "type" => "integer" ],
-                                    "Quantity"              => [ "type" => "integer" ],
-                                    "RetainerID"            => [ "type" => "text" ],
-                                    "RetainerName"          => [ "type" => "text" ],
-                                    "CreatorSignatureID"    => [ "type" => "text" ],
-                                    "CreatorSignatureName"  => [ "type" => "text" ],
-                                    "TownID"                => [ "type" => "integer" ],
-                                    "StainID"               => [ "type" => "integer" ],
+                                    "ID"                   => ["type" => "text"],
+                                    "Added"                => ["type" => "integer"],
+                                    "IsCrafted"            => ["type" => "boolean"],
+                                    "IsHq"                 => ["type" => "boolean"],
+                                    "PricePerUnit"         => ["type" => "integer"],
+                                    "PriceTotal"           => ["type" => "integer"],
+                                    "Quantity"             => ["type" => "integer"],
+                                    "RetainerID"           => ["type" => "text"],
+                                    "RetainerName"         => ["type" => "text"],
+                                    "CreatorSignatureID"   => ["type" => "text"],
+                                    "CreatorSignatureName" => ["type" => "text"],
+                                    "TownID"               => ["type" => "integer"],
+                                    "StainID"              => ["type" => "integer"],
                                 ]
                             ],
-                            "History"   => [
-                                "type"  => "nested",
+                            "History" => [
+                                "type"       => "nested",
                                 "properties" => [
-                                    "ID"                    => [ "type" => "text" ],
-                                    "Added"                 => [ "type" => "integer" ],
-                                    "PurchaseDate"          => [ "type" => "integer" ],
-                                    "PurchaseDateMs"        => [ "type" => "text" ],
-                                    "CharacterID"           => [ "type" => "text" ],
-                                    "CharacterName"         => [ "type" => "text" ],
-                                    "IsHq"                  => [ "type" => "boolean" ],
-                                    "PricePerUnit"          => [ "type" => "integer" ],
-                                    "PriceTotal"            => [ "type" => "integer" ],
-                                    "Quantity"              => [ "type" => "integer" ],
+                                    "ID"             => ["type" => "text"],
+                                    "Added"          => ["type" => "integer"],
+                                    "PurchaseDate"   => ["type" => "integer"],
+                                    "PurchaseDateMs" => ["type" => "text"],
+                                    "CharacterID"    => ["type" => "text"],
+                                    "CharacterName"  => ["type" => "text"],
+                                    "IsHq"           => ["type" => "boolean"],
+                                    "PricePerUnit"   => ["type" => "integer"],
+                                    "PriceTotal"     => ["type" => "integer"],
+                                    "Quantity"       => ["type" => "integer"],
                                 ]
                             ]
                         ]
@@ -213,7 +221,7 @@ class ElasticSearch
         return $this->client->mget([
             'index' => $index,
             'type'  => $type,
-            "body" => [
+            "body"  => [
                 'ids' => $keys
             ]
         ]);
@@ -223,8 +231,8 @@ class ElasticSearch
     {
         $this->client->delete([
             'index' => $index,
-            'type' => $type,
-            'id' => $id,
+            'type'  => $type,
+            'id'    => $id,
         ]);
     }
 
