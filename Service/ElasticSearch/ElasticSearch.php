@@ -33,10 +33,10 @@ class ElasticSearch
         ];
 
         if (isset($login) && isset($password)) {
-            $config['user'] = $login;
-            $config['pass'] = $password;
+            $hosts['user'] = $login;
+            $hosts['pass'] = $password;
         }
-        $this->client = ClientBuilder::create()->setHosts([$hosts])->build();
+        $this->client = ClientBuilder::create()->setHosts(array($hosts)->build();
 
         if (!$this->client) {
             throw new \Exception("Could not connect to ElasticSearch.");
