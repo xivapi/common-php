@@ -36,7 +36,7 @@ class ElasticSearch
             $hosts['user'] = $login;
             $hosts['pass'] = $password;
         }
-        $this->client = ClientBuilder::create()->setHosts(array($hosts)->build();
+        $this->client = ClientBuilder::create()->setHosts(array($hosts))->build();
 
         if (!$this->client) {
             throw new \Exception("Could not connect to ElasticSearch.");
