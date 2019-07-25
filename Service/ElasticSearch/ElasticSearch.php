@@ -260,4 +260,9 @@ class ElasticSearch
             'body'  => $query
         ]);
     }
+
+    public function hasIndex(string $index)
+    {
+        return $this->client->indices()->exists($index);
+    }
 }
