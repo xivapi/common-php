@@ -263,6 +263,8 @@ class ElasticSearch
 
     public function hasIndex(string $index)
     {
-        return $this->client->indices()->exists($index);
+        return $this->client->indices()->exists([
+            'index' => $index
+        ]);
     }
 }
