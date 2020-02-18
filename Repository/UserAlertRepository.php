@@ -4,8 +4,7 @@ namespace App\Common\Repository;
 
 use App\Common\Entity\UserAlert;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Symfony\Bridge\Doctrine\ManagerRegistry;
-use Symfony\Bridge\Doctrine\RegistryInterface;
+use Doctrine\Common\Persistence\ManagerRegistry;
 
 class UserAlertRepository extends ServiceEntityRepository
 {
