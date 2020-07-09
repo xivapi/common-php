@@ -8,10 +8,10 @@ use Delight\Cookie\Cookie;
 class GameServers
 {
     const DEFAULT_SERVER = 'Phoenix';
-    
+
     const MARKET_OFFLINE = [
         // JP Servers
-        1,2,3,4,5,6,9,12,14,17,22,23,26,27,29,30,32,38,39,45,48,49,51,54,55,56,57,58,60,61,62,64
+        1, 2, 3, 4, 5, 6, 9, 12, 14, 17, 22, 23, 26, 27, 29, 30, 32, 38, 39, 45, 48, 49, 51, 54, 55, 56, 57, 58, 60, 61, 62, 64
     ];
 
     /**
@@ -88,21 +88,68 @@ class GameServers
         // New for 5.0
         'Spriggan',     # 66
         'Twintania',    # 67
+
+        // Chinese servers
+        'HongYuHai',
+        'ShenYiZhiDi',
+        'LaNuoXiYa',
+        'HuanYingQunDao',
+        'MengYaChi',
+        'YuZhouHeYin',
+        'WoXianXiRan',
+        'ChenXiWangZuo',
+        'ZiShuiZhanQiao',
+        'YanXia',
+        'JingYuZhuangYuan',
+        'MoDuNa',
+        'HaiMaoChaWu',
+        'RouFengHaiWan',
+        'HuPoYuan',
+        'HongYuHai',
+        'ShenYiZhiDi',
+        'LaNuoXiYa',
+        'HuanYingQunDao',
+        'MengYaChi',
+        'YuZhouHeYin',
+        'WoXianXiRan',
+        'ChenXiWangZuo',
+        'BaiYinXiang',
+        'BaiJinHuanXiang',
+        'ShenQuanHen',
+        'ChaoFengTing',
+        'LvRenZhanQiao',
+        'FuXiaoZhiJian',
+        'Longchaoshendian',
+        'MengYuBaoJing',
+        'ZiShuiZhanQiao',
+        'YanXia',
+        'JingYuZhuangYuan',
+        'MoDuNa',
+        'HaiMaoChaWu',
+        'RouFengHaiWan',
+        'HuPoYuan'
     ];
-    
+
     const MARKET_SERVER = 'Balmung';
 
     const LIST_DC_REGIONS = [
-        'Elemental' => 1,
-        'Gaia'      => 1,
-        'Mana'      => 1,
+        'Elemental'     => 1,
+        'Gaia'          => 1,
+        'Mana'          => 1,
 
-        'Aether'    => 2,
-        'Primal'    => 2,
-        'Crystal'   => 2,
+        'Aether'        => 2,
+        'Primal'        => 2,
+        'Crystal'       => 2,
 
-        'Chaos'     => 3,
-        'Light'     => 3,
+        'Chaos'         => 3,
+        'Light'         => 3,
+
+        '陆行鸟'        => 4,
+        '莫古力'        => 4,
+        '猫小胖'        => 4,
+        'LuXingNiao'    => 4,
+        'MoGuLi'        => 4,
+        'MaoXiaoPang'   => 4
     ];
 
     const LIST_DC = [
@@ -195,9 +242,67 @@ class GameServers
             'Shinryu',
             'Titan',
         ],
-
+        // Chinese servers
+        '陆行鸟' => [
+            'HongYuHai',
+            'ShenYiZhiDi',
+            'LaNuoXiYa',
+            'HuanYingQunDao',
+            'MengYaChi',
+            'YuZhouHeYin',
+            'WoXianXiRan',
+            'ChenXiWangZuo'
+        ],
+        '莫古力' => [
+            'BaiYinXiang',
+            'BaiJinHuanXiang',
+            'ShenQuanHen',
+            'ChaoFengTing',
+            'LvRenZhanQiao',
+            'FuXiaoZhiJian',
+            'Longchaoshendian',
+            'MengYuBaoJing'
+        ],
+        '猫小胖' => [
+            'ZiShuiZhanQiao',
+            'YanXia',
+            'JingYuZhuangYuan',
+            'MoDuNa',
+            'HaiMaoChaWu',
+            'RouFengHaiWan',
+            'HuPoYuan'
+        ],
+        'LuXingNiao' => [
+            'HongYuHai',
+            'ShenYiZhiDi',
+            'LaNuoXiYa',
+            'HuanYingQunDao',
+            'MengYaChi',
+            'YuZhouHeYin',
+            'WoXianXiRan',
+            'ChenXiWangZuo'
+        ],
+        'MoGuLi' => [
+            'BaiYinXiang',
+            'BaiJinHuanXiang',
+            'ShenQuanHen',
+            'ChaoFengTing',
+            'LvRenZhanQiao',
+            'FuXiaoZhiJian',
+            'Longchaoshendian',
+            'MengYuBaoJing'
+        ],
+        'MaoXiaoPang' => [
+            'ZiShuiZhanQiao',
+            'YanXia',
+            'JingYuZhuangYuan',
+            'MoDuNa',
+            'HaiMaoChaWu',
+            'RouFengHaiWan',
+            'HuPoYuan'
+        ]
     ];
-    
+
     /**
      * Get the users current server
      */
