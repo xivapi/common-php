@@ -21,7 +21,7 @@ use Ramsey\Uuid\Uuid;
  */
 class GoogleAnalytics
 {
-    const ENDPOINT = 'http://www.google-analytics.com';
+    const ENDPOINT = 'https://www.google-analytics.com';
     const VERIFY   = false;
     const VERSION  = 1;
     const TIMEOUT  = 5;
