@@ -146,10 +146,7 @@ class GameServers
 
         '陆行鸟'        => 4,
         '莫古力'        => 4,
-        '猫小胖'        => 4,
-        'LuXingNiao'    => 4,
-        'MoGuLi'        => 4,
-        'MaoXiaoPang'   => 4
+        '猫小胖'        => 4
     ];
 
     const LIST_DC = [
@@ -264,35 +261,6 @@ class GameServers
             'MengYuBaoJing'
         ],
         '猫小胖' => [
-            'ZiShuiZhanQiao',
-            'YanXia',
-            'JingYuZhuangYuan',
-            'MoDuNa',
-            'HaiMaoChaWu',
-            'RouFengHaiWan',
-            'HuPoYuan'
-        ],
-        'LuXingNiao' => [
-            'HongYuHai',
-            'ShenYiZhiDi',
-            'LaNuoXiYa',
-            'HuanYingQunDao',
-            'MengYaChi',
-            'YuZhouHeYin',
-            'WoXianXiRan',
-            'ChenXiWangZuo'
-        ],
-        'MoGuLi' => [
-            'BaiYinXiang',
-            'BaiJinHuanXiang',
-            'ShenQuanHen',
-            'ChaoFengTing',
-            'LvRenZhanQiao',
-            'FuXiaoZhiJian',
-            'Longchaoshendian',
-            'MengYuBaoJing'
-        ],
-        'MaoXiaoPang' => [
             'ZiShuiZhanQiao',
             'YanXia',
             'JingYuZhuangYuan',
