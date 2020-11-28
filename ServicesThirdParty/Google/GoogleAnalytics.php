@@ -4,8 +4,6 @@ namespace App\Common\ServicesThirdParty\Google;
 
 use App\Service\API\ApiRequest;
 use App\Common\Utils\Language;
-use GuzzleHttp\Client;
-use GuzzleHttp\RequestOptions;
 use Ramsey\Uuid\Uuid;
 
 /**
@@ -21,7 +19,7 @@ use Ramsey\Uuid\Uuid;
  */
 class GoogleAnalytics
 {
-    const ENDPOINT = 'http://www.google-analytics.com';
+    const ENDPOINT = 'https://www.google-analytics.com/collect';
     const VERIFY   = false;
     const VERSION  = 1;
     const TIMEOUT  = 5;
@@ -31,19 +29,19 @@ class GoogleAnalytics
      */
     public static function query(array $options)
     {
-        try {
-           $client = new Client([
-                'base_uri' => self::ENDPOINT,
-                'timeout'  => self::TIMEOUT,
-                'verify'   => self::VERIFY,
-            ]);
-            
-            $client->post('/collect', [
-                RequestOptions::QUERY => $options
-            ]);
-        } catch (\Exception $ex) {
-            // ignore
-        }
+        $postdata = http_build_query($options);
+        
+        $opts = [
+            'http' => [
+                'method' => 'POST',
+                'header' => 'Content-Type: application/x-www-form-urlencoded',
+                'content' => $postdata
+            ]
+        ];
+    
+        $context = stream_context_create($opts);
+
+        file_get_contents(self::ENDPOINT, false, $context);
     }
     
     /**
