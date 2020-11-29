@@ -268,6 +268,13 @@ class GameServers
             'HaiMaoChaWu',
             'RouFengHaiWan',
             'HuPoYuan'
+        ],
+        // Korean servers don't have datacenters, so we're going to call them "Korea"
+        'Korea' => [
+            '초코보',
+            '모그리',
+            '카벙클',
+            '톤베리'
         ]
     ];
 
