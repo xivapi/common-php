@@ -146,7 +146,10 @@ class GameServers
 
         '陆行鸟'        => 4,
         '莫古力'        => 4,
-        '猫小胖'        => 4
+        '猫小胖'        => 4,
+        'LuXingNiao'    => 4,
+        'MoGuLi'        => 4,
+        'MaoXiaoPang'   => 4
     ];
 
     const LIST_DC = [
@@ -269,6 +272,7 @@ class GameServers
             'RouFengHaiWan',
             'HuPoYuan'
         ],
+
         // Korean servers don't have datacenters, so we're going to call them "Korea"
         'Korea' => [
             '초코보',

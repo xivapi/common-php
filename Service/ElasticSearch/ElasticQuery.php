@@ -7,6 +7,8 @@ class ElasticQuery
     /** @var array */
     private $body = [];
     private $filters = [];
+    private $must = [];
+    private $must_not = [];
     private $suggestions = [];
     private $limit;
     private $sorting;
@@ -43,6 +45,20 @@ class ElasticQuery
 
         if ($this->filters) {
             $response['query']['bool']['filter'] = $this->filters;
+        }
+
+        if ($this->must) {
+            if (!isset($response['query']['bool']['must'])) {
+                $response['query']['bool']['must'] = [];
+            }
+            $response['query']['bool']['must'][] = $this->must;
+        }
+
+        if ($this->must_not) {
+            if (!isset($response['query']['bool']['must_not'])) {
+                $response['query']['bool']['must_not'] = [];
+            }
+            $response['query']['bool']['must_not'][] = $this->must_not;
         }
 
         return $response;
@@ -287,6 +303,36 @@ class ElasticQuery
         $this->filters[] = [
             'range' => [
                 $field => [$condition => strtolower($value)]
+            ]
+        ];
+        return $this;
+    }
+
+    public function excludeColumn(string $field): self
+    {
+        $this->must_not[] = [
+            'exists' => [
+                'field' => $field
+            ]
+        ];
+        return $this;
+    }
+
+    public function mustHaveColumn(string $field): self
+    {
+        $this->must[] = [
+            'exists' => [
+                'field' => $field
+            ]
+        ];
+        return $this;
+    }
+
+    public function excludeDated(): self
+    {
+        $this->must_not[] = [
+            'prefix' => [
+                'Name' => 'Dated'
             ]
         ];
         return $this;
